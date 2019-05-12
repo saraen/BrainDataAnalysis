@@ -15,9 +15,8 @@ classdef Cohort < handle
         end
         
         function loadCohortMembersFromFile(obj, descriptionFileName)
-            
             descriptionTable = readtable(descriptionFileName);
-            [descriptionTableRows,descriptionTableColumns]=size(descriptionTable);
+            descriptionTableRows = size(descriptionTable, 1);
             
             hvFaDirName = 'CONN_UOC\FA\HV\';
             hvScDirName = 'CONN_UOC\SC\HV\';
@@ -57,6 +56,17 @@ classdef Cohort < handle
                     obj.patients = [obj.patients, person];
                     
                 end
+            end
+        end
+        
+        function analizeCohort(obj)
+            obj.analizePersonsVector(obj.patients);
+            obj.analizePersonsVector(obj.healthControls);   
+        end
+        
+        function analizePersonsVector(obj, personsVector)
+            for i = 1:length(personsVector)
+                personsVector(i).analize();
             end
         end
         

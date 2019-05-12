@@ -14,6 +14,11 @@ classdef Person < handle
         function set.SCMatrix(obj, value)
             obj.SCMatrix = BrainMatrix(value);
         end
+        
+        function analize(obj)
+            obj.FAMatrix.analize();
+            obj.SCMatrix.analize();
+        end
     end
     
 end
