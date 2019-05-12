@@ -3,6 +3,17 @@ classdef BrainMatrix < handle
     
     properties
         matrix
+        
+        % graph properties
+        betweeness
+        clusteringCoef
+        density
+        shortestPath
+        efficiency
+        modularity
+        richClub
+        strengths
+        transitivity
     end
     
     methods
