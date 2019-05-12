@@ -8,10 +8,12 @@ classdef Cohort < handle
     
     methods
         
+        % Constuctor
         function obj = Cohort
             obj.patients = [];
             obj.healthControls = [];
         end
+        
         function loadCohortMembersFromFile(obj, descriptionFileName)
             
             descriptionTable = readtable(descriptionFileName);
