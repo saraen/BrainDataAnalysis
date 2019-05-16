@@ -5,6 +5,7 @@ classdef BrainMatrix < handle
         matrix
         
         % graph properties
+        degrees
         betweeness
         clusteringCoef
         density
@@ -13,7 +14,6 @@ classdef BrainMatrix < handle
         modularity
         richClub
         strengths
-        transitivity
     end
     
     methods
@@ -22,7 +22,8 @@ classdef BrainMatrix < handle
             obj.matrix = matrix;
         end
         
-        function analize(obj)           
+        function analize(obj)       
+            obj.degrees        = degrees_und(obj.matrix);
             obj.betweeness     = betweenness_wei(obj.matrix);
             obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
             obj.density        = density_und(obj.matrix);
