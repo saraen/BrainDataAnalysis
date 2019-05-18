@@ -5,16 +5,22 @@ classdef MatrixAnalysisResults < handle
     
     properties
         %Strength
-        strengthMean = 0
-        strengthSd = 0
-        strengthTtest = 0
+        strengthMean   = 0
+        strengthSd     = 0
+        strengthTtest  = 0
         strengthPvalue = 0  
         
         %Degrees
-        degreesMean = 0
-        degreesSd = 0
-        degreesTtest = 0
-        degreesPvalue = 0  
+        degreesMean   = 0
+        degreesSd     = 0
+        degreesTtest  = 0
+        degreesPvalue = 0 
+        
+        %Betweenness centrality
+        betweennessMean   = 0
+        betweennessSd     = 0
+        betweennessTtest  = 0
+        betweennessPvalue = 0
         
     end
     

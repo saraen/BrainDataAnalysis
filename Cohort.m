@@ -106,7 +106,21 @@ classdef Cohort < handle
             disp('DEGREES - SC MATRIX');
             disp(['MS: ', num2str(obj.SCpatientsResults.degreesMean), ' (', num2str(obj.SCpatientsResults.degreesSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.degreesMean), ' (', num2str(obj.SChealthControlsResults.degreesSd), ')']);
-            disp(['p-value: ', num2str(obj.SChealthControlsResults.degreesPvalue)]);            
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.degreesPvalue)]);        
+            
+            disp('====================');
+            
+            disp('BETWEENNESS CENTRALITY - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.betweennessMean), ' (', num2str(obj.FApatientsResults.betweennessSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.betweennessMean), ' (', num2str(obj.FAhealthControlsResults.betweennessSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.betweennessPvalue)]);
+            
+            disp('--------------------');
+            disp('BETWEENNESS CENTRALITY - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.betweennessMean), ' (', num2str(obj.SCpatientsResults.betweennessSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.betweennessMean), ' (', num2str(obj.SChealthControlsResults.betweennessSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.betweennessPvalue)]);            
+            
         end
         
         function showPlots(obj)
@@ -324,11 +338,13 @@ classdef Cohort < handle
         function evaluateFAMatrix(obj)
             evaluateStrengthsFAMatrix(obj);
             evaluateDegreesFAMatrix(obj);
+            evaluateBetweennessFAMatrix(obj);
         end
         
         function evaluateSCMatrix(obj)
             evaluateStrengthsSCMatrix(obj);
             evaluateDegreesSCMatrix(obj);
+            evaluateBetweennessSCMatrix(obj);
         end
         
         
@@ -412,6 +428,49 @@ classdef Cohort < handle
             [obj.SChealthControlsResults.degreesTtest, obj.SChealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
 
         end
+        
+        
+        function evaluateBetweennessFAMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsBetweenness(i,:) = obj.patients(i).FAMatrix.betweenness;
+            end
+            obj.FApatientsResults.betweennessMean = mean2(patientsBetweenness);
+            obj.FApatientsResults.betweennessSd = std2(patientsBetweenness);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsBetweenness(i,:) = obj.healthControls(i).FAMatrix.betweenness;
+            end
+            obj.FAhealthControlsResults.betweennessMean = mean2(healthControlsBetweenness);
+            obj.FAhealthControlsResults.betweennessSd = std2(healthControlsBetweenness);
+            
+            % Perform the t-test
+            [obj.FApatientsResults.betweennessTtest, obj.FApatientsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
+            [obj.FAhealthControlsResults.betweennessTtest, obj.FAhealthControlsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
+        end
+        
+        function evaluateBetweennessSCMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsBetweenness(i,:) = obj.patients(i).SCMatrix.betweenness;
+            end
+            obj.SCpatientsResults.betweennessMean = mean2(patientsBetweenness);
+            obj.SCpatientsResults.betweennessSd = std2(patientsBetweenness);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsBetweenness(i,:) = obj.healthControls(i).SCMatrix.betweenness;
+            end
+            obj.SChealthControlsResults.betweennessMean = mean2(healthControlsBetweenness);
+            obj.SChealthControlsResults.betweennessSd = std2(healthControlsBetweenness);
+            
+            % Perform the t-test
+            [obj.SCpatientsResults.betweennessTtest, obj.SCpatientsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
+            [obj.SChealthControlsResults.betweennessTtest, obj.SChealthControlsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
+
+        end
+        
         
     end
     

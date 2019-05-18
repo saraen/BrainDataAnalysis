@@ -6,13 +6,12 @@ classdef BrainMatrix < handle
         
         % graph properties
         degrees
-        betweeness
+        betweenness
         clusteringCoef
         density
         shortestPath
         efficiency
         modularity
-        richClub
         strengths
     end
     
@@ -22,16 +21,16 @@ classdef BrainMatrix < handle
             obj.matrix = matrix;
         end
         
-        function analize(obj)       
-            obj.degrees        = degrees_und(obj.matrix);
-            obj.betweeness     = betweenness_wei(obj.matrix);
-            obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
-            obj.density        = density_und(obj.matrix);
-            obj.shortestPath   = distance_wei(obj.matrix);
-            obj.efficiency     = efficiency_wei(obj.matrix);
-            obj.modularity     = modularity_und(obj.matrix);
-            obj.richClub       = rich_club_wu(obj.matrix);
+        function analize(obj)   
             obj.strengths      = strengths_und_sign(obj.matrix);
+            obj.degrees        = degrees_und(obj.matrix);
+            obj.betweenness     = betweenness_wei(weight_conversion(obj.matrix, 'lengths'));
+%             obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
+%             obj.density        = density_und(obj.matrix);
+%             obj.shortestPath   = distance_wei(obj.matrix);
+%             obj.efficiency     = efficiency_wei(obj.matrix);
+%             obj.modularity     = modularity_und(obj.matrix);
+            
         end
     end
     
