@@ -10,6 +10,12 @@ classdef MatrixAnalysisResults < handle
         strengthTtest = 0
         strengthPvalue = 0  
         
+        %Degrees
+        degreesMean = 0
+        degreesSd = 0
+        degreesTtest = 0
+        degreesPvalue = 0  
+        
     end
     
     methods

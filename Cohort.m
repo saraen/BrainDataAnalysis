@@ -95,14 +95,32 @@ classdef Cohort < handle
             disp(['HV: ', num2str(obj.SChealthControlsResults.strengthMean), ' (', num2str(obj.SChealthControlsResults.strengthSd), ')']);
             disp(['p-value: ', num2str(obj.SChealthControlsResults.strengthPvalue)]);
             
+            disp('====================');
+            
+            disp('DEGREES - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.degreesMean), ' (', num2str(obj.FApatientsResults.degreesSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.degreesMean), ' (', num2str(obj.FAhealthControlsResults.degreesSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.degreesPvalue)]);
+            
+            disp('--------------------');
+            disp('DEGREES - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.degreesMean), ' (', num2str(obj.SCpatientsResults.degreesSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.degreesMean), ' (', num2str(obj.SChealthControlsResults.degreesSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.degreesPvalue)]);            
         end
         
         function showPlots(obj)
+            %Strength
             strengthsLinePlot(obj, 'FAMatrix');
             strengthsLinePlot(obj, 'SCMatrix');
             strengthsBoxPlot(obj, 'FAMatrix');
             strengthsBoxPlot(obj, 'SCMatrix');
             
+            %Degrees
+%             degreesLinePlot(obj, 'FAMatrix');
+%             degreesLinePlot(obj, 'SCMatrix');
+%             degreesBoxPlot(obj, 'FAMatrix');
+%             degreesBoxPlot(obj, 'SCMatrix');
         end
         
         % This function shows a line plot of the mean values of the
@@ -156,6 +174,7 @@ classdef Cohort < handle
             hold on;
             plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
+            ylabel('Mean strength');
             xlabel('Nodes');
             
             % Plot the hub limits
@@ -165,7 +184,7 @@ classdef Cohort < handle
             hold off
         end
         
-        % This function plots the boxplot of both groups
+        % This function plots the strength boxplot of both groups
         %
         % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
         function strengthsBoxPlot(obj, matrixType)
@@ -205,9 +224,7 @@ classdef Cohort < handle
             %Plot the values
             figure
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
-            title(plotTitle)
-            
-            
+            title(plotTitle)                     
         end
         
         function evaluateCohort(obj)
@@ -217,11 +234,12 @@ classdef Cohort < handle
         
         function evaluateFAMatrix(obj)
             evaluateStrengthsFAMatrix(obj);
+            evaluateDegreesFAMatrix(obj);
         end
         
         function evaluateSCMatrix(obj)
             evaluateStrengthsSCMatrix(obj);
-            
+            evaluateDegreesSCMatrix(obj);
         end
         
         
@@ -265,6 +283,46 @@ classdef Cohort < handle
             [obj.SChealthControlsResults.strengthTtest, obj.SChealthControlsResults.strengthPvalue] = ttest2( mean(healthControlsStrengths, 2), mean(patientsStrengths,2));
         end
         
+        function evaluateDegreesFAMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsDegrees(i,:) = obj.patients(i).FAMatrix.degrees;
+            end
+            obj.FApatientsResults.degreesMean = mean2(patientsDegrees);
+            obj.FApatientsResults.degreesSd = std2(patientsDegrees);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsDegrees(i,:) = obj.healthControls(i).FAMatrix.degrees;
+            end
+            obj.FAhealthControlsResults.degreesMean = mean2(healthControlsDegrees);
+            obj.FAhealthControlsResults.degreesSd = std2(healthControlsDegrees);
+            
+            % Perform the t-test
+            [obj.FApatientsResults.degreesTtest, obj.FApatientsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
+            [obj.FAhealthControlsResults.degreesTtest, obj.FAhealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
+        end
+        
+        function evaluateDegreesSCMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsDegrees(i,:) = obj.patients(i).SCMatrix.degrees;
+            end
+            obj.SCpatientsResults.degreesMean = mean2(patientsDegrees);
+            obj.SCpatientsResults.degreesSd = std2(patientsDegrees);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.strengths;
+            end
+            obj.SChealthControlsResults.degreesMean = mean2(healthControlsDegrees);
+            obj.SChealthControlsResults.degreesSd = std2(healthControlsDegrees);
+            
+            % Perform the t-test
+            [obj.SCpatientsResults.degreesTtest, obj.SCpatientsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
+            [obj.SChealthControlsResults.degreesTtest, obj.SChealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
+
+        end
         
     end
     
