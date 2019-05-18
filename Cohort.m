@@ -117,10 +117,10 @@ classdef Cohort < handle
             strengthsBoxPlot(obj, 'SCMatrix');
             
             %Degrees
-%             degreesLinePlot(obj, 'FAMatrix');
-%             degreesLinePlot(obj, 'SCMatrix');
-%             degreesBoxPlot(obj, 'FAMatrix');
-%             degreesBoxPlot(obj, 'SCMatrix');
+            degreesLinePlot(obj, 'FAMatrix');
+            degreesLinePlot(obj, 'SCMatrix');
+            degreesBoxPlot(obj, 'FAMatrix');
+            degreesBoxPlot(obj, 'SCMatrix');
         end
         
         % This function shows a line plot of the mean values of the
@@ -226,7 +226,96 @@ classdef Cohort < handle
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)                     
         end
+
+        % This function shows a line plot of the mean values of the
+        % degrees of each node for each population
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function degreesLinePlot(obj, matrixType)
+            
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsDegrees(i,:) = obj.patients(i).FAMatrix.degrees;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsDegrees(i,:) = obj.healthControls(i).FAMatrix.degrees;
+                end                
+                plotTitle = 'Degrees-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsDegrees(i,:) = obj.patients(i).SCMatrix.degrees;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
+                end              
+                plotTitle = 'Degrees-SC Matrix';                
+                
+            end
+            
+            % Then we obtain the mean value of each column of the degrees
+            % matrices. This is the mean degree value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsDegrees);
+            hv_mean_by_node = mean(healthControlsDegrees);
+            
+            % Now we plot the values
+            figure
+            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            title(plotTitle);
+            hold on;
+            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            legend('hv', 'ms');
+            ylabel('Mean degree');
+            xlabel('Nodes');
+            
+            hold off
+        end
         
+        % This function plots the degree boxplot of both groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function degreesBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsDegrees(i,:) = obj.patients(i).FAMatrix.degrees;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsDegrees(i,:) = obj.healthControls(i).FAMatrix.degrees;
+                end
+                
+                plotTitle = 'Degrees-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsDegrees(i,:) = obj.patients(i).SCMatrix.degrees;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
+                end
+                
+                plotTitle = 'Degrees-SC Matrix';                
+                
+            end
+            
+            % Then we obtain the mean value of each column of the degrees
+            % matrices. This is the mean degree value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsDegrees);
+            hv_mean_by_node = mean(healthControlsDegrees);
+            
+            % Now we combine both groups of data into a matrix
+            X(:,1) = hv_mean_by_node;
+            X(:,2) = ms_mean_by_node;
+            
+            %Plot the values
+            figure
+            boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)                     
+        end
+
         function evaluateCohort(obj)
             evaluateFAMatrix(obj)
             evaluateSCMatrix(obj)
@@ -313,7 +402,7 @@ classdef Cohort < handle
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.strengths;
+                healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
             end
             obj.SChealthControlsResults.degreesMean = mean2(healthControlsDegrees);
             obj.SChealthControlsResults.degreesSd = std2(healthControlsDegrees);
