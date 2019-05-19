@@ -147,8 +147,45 @@ classdef Cohort < handle
             disp(['HV: ', num2str(obj.SChealthControlsResults.clusteringCoefMean), ' (', num2str(obj.SChealthControlsResults.clusteringCoefSd), ')']);
             disp(['p-value: ', num2str(obj.SChealthControlsResults.clusteringCoefPvalue)]);
 
-           
+            disp('====================');
             
+            disp('SHORTEST PATH LENGTH - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.shortestPathLengthMean), ' (', num2str(obj.FApatientsResults.shortestPathLengthSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.shortestPathLengthMean), ' (', num2str(obj.FAhealthControlsResults.shortestPathLengthSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.shortestPathLengthPvalue)]);
+            
+            disp('--------------------');
+            disp('SHORTEST PATH LENGTH - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.shortestPathLengthMean), ' (', num2str(obj.SCpatientsResults.shortestPathLengthSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.shortestPathLengthMean), ' (', num2str(obj.SChealthControlsResults.shortestPathLengthSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.shortestPathLengthPvalue)]);
+            
+            disp('====================');
+            
+            disp('NUMBER OF EDGES IN SHORTEST PATH - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.edgesInShortestPathMean), ' (', num2str(obj.FApatientsResults.edgesInShortestPathSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.edgesInShortestPathMean), ' (', num2str(obj.FAhealthControlsResults.edgesInShortestPathSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.edgesInShortestPathPvalue)]);
+            
+            disp('--------------------');
+            disp('NUMBER OF EDGES IN SHORTEST PATH - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.edgesInShortestPathMean), ' (', num2str(obj.SCpatientsResults.edgesInShortestPathSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.edgesInShortestPathMean), ' (', num2str(obj.SChealthControlsResults.edgesInShortestPathSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.edgesInShortestPathPvalue)]);
+            
+            disp('====================');
+            
+            disp('CHARACTERISTIC PATH LENGTH - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.characteristicPathLengthMean), ' (', num2str(obj.FApatientsResults.characteristicPathLengthSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.characteristicPathLengthMean), ' (', num2str(obj.FAhealthControlsResults.characteristicPathLengthSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.characteristicPathLengthPvalue)]);
+            
+            disp('--------------------');
+            disp('CHARACTERISTIC PATH LENGTH - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.characteristicPathLengthMean), ' (', num2str(obj.SCpatientsResults.characteristicPathLengthSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.characteristicPathLengthMean), ' (', num2str(obj.SChealthControlsResults.characteristicPathLengthSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.characteristicPathLengthPvalue)]);
+
         end
         
         function showPlots(obj)
@@ -173,12 +210,28 @@ classdef Cohort < handle
 %             %Global efficiency
 %             globalEfficiencyBoxPlot(obj, 'FAMatrix');
 %             globalEfficiencyBoxPlot(obj, 'SCMatrix');
+% 
+%             %Clustering coefficient
+%             clusteringCoefLinePlot(obj, 'FAMatrix');
+%             clusteringCoefLinePlot(obj, 'SCMatrix');
+%             clusteringCoefBoxPlot(obj, 'FAMatrix');
+%             clusteringCoefBoxPlot(obj, 'SCMatrix');
 
-            %Clustering coefficient
-            clusteringCoefLinePlot(obj, 'FAMatrix');
-            clusteringCoefLinePlot(obj, 'SCMatrix');
-            clusteringCoefBoxPlot(obj, 'FAMatrix');
-            clusteringCoefBoxPlot(obj, 'SCMatrix');
+            %Shortest Path Length
+            shortestPathLinePlot(obj, 'FAMatrix');
+            shortestPathLinePlot(obj, 'SCMatrix');
+            shortestPathBoxPlot(obj, 'FAMatrix');
+            shortestPathBoxPlot(obj, 'SCMatrix');
+            
+            %Number of edges in the shortest path
+            edgesInShortestPathLinePlot(obj, 'FAMatrix');
+            edgesInShortestPathLinePlot(obj, 'SCMatrix');
+            edgesInShortestPathBoxPlot(obj, 'FAMatrix');
+            edgesInShortestPathBoxPlot(obj, 'SCMatrix');
+            
+            %Characteristic path length
+            characteristicPathLengthBoxPlot(obj, 'FAMatrix');
+            characteristicPathLengthBoxPlot(obj, 'SCMatrix');
 
             
         end
@@ -592,6 +645,221 @@ classdef Cohort < handle
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)
         end
+        
+        % This function shows a line plot of the mean values of the
+        % shortest path length of each node for each population
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function shortestPathLinePlot(obj, matrixType)
+            
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsShortestPathLength(i,:) = mean(obj.patients(i).FAMatrix.shortestPathLength);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsShortestPathLength(i,:) = mean(obj.healthControls(i).FAMatrix.shortestPathLength);
+                end
+                plotTitle = 'Shortest path length-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsShortestPathLength(i,:) = mean(obj.patients(i).SCMatrix.shortestPathLength);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsShortestPathLength(i,:) = mean(obj.healthControls(i).SCMatrix.shortestPathLength);
+                end
+                plotTitle = 'Shortest path length-SC Matrix';
+                
+            end
+            
+            % Then we obtain the mean value of each column of the clustering coef
+            % matrices. This is the mean betweenness value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsShortestPathLength);
+            hv_mean_by_node = mean(healthControlsShortestPathLength);
+            
+            % Now we plot the values
+            figure
+            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            title(plotTitle);
+            hold on;
+            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            legend('hv', 'ms');
+            ylabel('Mean shortest path length');
+            xlabel('Nodes');
+            
+            hold off
+        end
+        
+        % This function plots the shortest path length boxplot of both
+        % groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function shortestPathBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsShortestPathLength(i,:) = mean(obj.patients(i).FAMatrix.shortestPathLength);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsShortestPathLength(i,:) = mean(obj.healthControls(i).FAMatrix.shortestPathLength);
+                end
+                
+                plotTitle = 'Shortest path length-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsShortestPathLength(i,:) = mean(obj.patients(i).SCMatrix.shortestPathLength);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsShortestPathLength(i,:) = mean(obj.healthControls(i).SCMatrix.shortestPathLength);
+                end
+                
+                plotTitle = 'Shortest path length-SC Matrix';
+                
+            end
+            
+            % Then we obtain the mean value of each column of the clustering coef
+            % matrices. This is the mean clustering coef value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsShortestPathLength);
+            hv_mean_by_node = mean(healthControlsShortestPathLength);
+            
+            % Now we combine both groups of data into a matrix
+            X(:,1) = hv_mean_by_node;
+            X(:,2) = ms_mean_by_node;
+            
+            %Plot the values
+            figure
+            boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)
+        end
+        
+        % This function shows a line plot of the mean number of edges in
+        % the shortest paths of each node for each population
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function edgesInShortestPathLinePlot(obj, matrixType)
+            
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).FAMatrix.edgesInShortestPath);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.edgesInShortestPath);
+                end
+                plotTitle = 'Number of edges in the shortest path-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).SCMatrix.edgesInShortestPath);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.edgesInShortestPath);
+                end
+                plotTitle = 'Number of edges in the shortest path-SC Matrix';
+                
+            end
+            
+
+            ms_mean_by_node = mean(patientsEdgesInShortestPath);
+            hv_mean_by_node = mean(healthControlsEdgesInShortestPath);
+            
+            % Now we plot the values
+            figure
+            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            title(plotTitle);
+            hold on;
+            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            legend('hv', 'ms');
+            ylabel('Mean number of edges in the shortest path');
+            xlabel('Nodes');
+            
+            hold off
+        end
+        
+        % This function plots the number of edges in the shortest path boxplot of both
+        % groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function edgesInShortestPathBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).FAMatrix.edgesInShortestPath);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.edgesInShortestPath);
+                end
+                
+                plotTitle = 'Number of edges in the shortest path-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).SCMatrix.edgesInShortestPath);
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.edgesInShortestPath);
+                end
+                
+                plotTitle = 'Number of edges in the shortest path-SC Matrix';
+                
+            end
+            
+            % Then we obtain the mean value of each column of the clustering coef
+            % matrices. This is the mean clustering coef value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsEdgesInShortestPath);
+            hv_mean_by_node = mean(healthControlsEdgesInShortestPath);
+            
+            % Now we combine both groups of data into a matrix
+            X(:,1) = hv_mean_by_node;
+            X(:,2) = ms_mean_by_node;
+            
+            %Plot the values
+            figure
+            boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)
+        end        
+        
+        
+        % This function plots the characteristic path length boxplot of both
+        % groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function characteristicPathLengthBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsCharacteristicPathLength(i,:) = obj.patients(i).FAMatrix.characteristicPathLength;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).FAMatrix.characteristicPathLength;
+                end
+                             
+                plotTitle = 'Characteristic Path Length-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsCharacteristicPathLength(i,:) = obj.patients(i).SCMatrix.characteristicPathLength;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).SCMatrix.characteristicPathLength;
+                end
+                
+                plotTitle = 'Characteristic Path Length-SC Matrix';
+                
+            end
+                        
+            %Plot the values
+            group = [    ones(size(healthControlsCharacteristicPathLength));
+                     2 * ones(size(patientsCharacteristicPathLength))];
+            figure
+            boxplot([healthControlsCharacteristicPathLength; patientsCharacteristicPathLength],group, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)
+        end
 
         
         function evaluateCohort(obj)
@@ -604,7 +872,8 @@ classdef Cohort < handle
 %             evaluateDegreesFAMatrix(obj);
 %             evaluateBetweennessFAMatrix(obj);
 %             evaluateGlobalEfficiencyFAMatrix(obj);
-            evaluateClusteringCoefFAMatrix(obj);
+%             evaluateClusteringCoefFAMatrix(obj);
+            evaluateShortestPathFAMatrix(obj);
         end
         
         function evaluateSCMatrix(obj)
@@ -612,7 +881,8 @@ classdef Cohort < handle
 %             evaluateDegreesSCMatrix(obj);
 %             evaluateBetweennessSCMatrix(obj);
 %             evaluateGlobalEfficiencySCMatrix(obj);
-            evaluateClusteringCoefSCMatrix(obj);
+%             evaluateClusteringCoefSCMatrix(obj);
+            evaluateShortestPathSCMatrix(obj);
         end
         
         
@@ -820,8 +1090,124 @@ classdef Cohort < handle
             [obj.SChealthControlsResults.clusteringCoefTtest, obj.SChealthControlsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
             
         end
-
         
+        %This function evaluates the shortest path lengths, the number of
+        %edges in the shortest paths and the characteristic path length of
+        %the network
+        function evaluateShortestPathFAMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                
+                %The rows of this matrix corresponds to each patient in the
+                %group, and the columns, to the average path length of each
+                %node to the rest of the nodes
+                patientsShortestPath(i,:) = mean(obj.patients(i).FAMatrix.shortestPathLength);
+                
+                patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).FAMatrix.edgesInShortestPath);
+                
+                patientsCharacteristicPathLength(i,:) = obj.patients(i).FAMatrix.characteristicPathLength;                
+            end
+            obj.FApatientsResults.shortestPathLengthMean = mean2(patientsShortestPath);
+            obj.FApatientsResults.shortestPathLengthSd = std2(patientsShortestPath);
+            
+            obj.FApatientsResults.edgesInShortestPathMean = mean2(patientsEdgesInShortestPath);
+            obj.FApatientsResults.edgesInShortestPathSd = std2(patientsEdgesInShortestPath);
+            
+            obj.FApatientsResults.characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
+            obj.FApatientsResults.characteristicPathLengthSd = std2(patientsCharacteristicPathLength);
+            
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                
+                %The rows of this matrix corresponds to each patient in the
+                %group, and the columns, to the average path length of each
+                %node to the rest of the nodes
+                healthControlsShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.shortestPathLength);
+                
+                healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.edgesInShortestPath);
+                
+                healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).FAMatrix.characteristicPathLength;
+            end
+            obj.FAhealthControlsResults.shortestPathLengthMean = mean2(healthControlsShortestPath);
+            obj.FAhealthControlsResults.shortestPathLengthSd = std2(healthControlsShortestPath);
+            
+            obj.FAhealthControlsResults.edgesInShortestPathMean = mean2(healthControlsEdgesInShortestPath);
+            obj.FAhealthControlsResults.edgesInShortestPathSd = std2(healthControlsEdgesInShortestPath);
+            
+            obj.FAhealthControlsResults.characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
+            obj.FAhealthControlsResults.characteristicPathLengthSd = std2(healthControlsCharacteristicPathLength);
+            
+            % Perform the t-test
+            [obj.FApatientsResults.shortestPathLengthTtest, obj.FApatientsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
+            [obj.FAhealthControlsResults.shortestPathLengthTtest, obj.FAhealthControlsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
+            
+            [obj.FApatientsResults.edgesInShortestPathTtest, obj.FApatientsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
+            [obj.FAhealthControlsResults.edgesInShortestPathTtest, obj.FAhealthControlsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
+
+            [obj.FApatientsResults.characteristicPathLengthTtest, obj.FApatientsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            [obj.FAhealthControlsResults.characteristicPathLengthTtest, obj.FAhealthControlsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            
+        end
+        
+        %This function evaluates the shortest path lengths, the number of
+        %edges in the shortest paths and the characteristic path length of
+        %the network
+        function evaluateShortestPathSCMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                
+                %The rows of this matrix corresponds to each patient in the
+                %group, and the columns, to the average path length of each
+                %node to the rest of the nodes
+                patientsShortestPath(i,:) = mean(obj.patients(i).SCMatrix.shortestPathLength);
+                
+                patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).SCMatrix.edgesInShortestPath);
+                
+                patientsCharacteristicPathLength(i,:) = obj.patients(i).SCMatrix.characteristicPathLength;                
+            end
+            obj.SCpatientsResults.shortestPathLengthMean = mean2(patientsShortestPath);
+            obj.SCpatientsResults.shortestPathLengthSd = std2(patientsShortestPath);
+            
+            obj.SCpatientsResults.edgesInShortestPathMean = mean2(patientsEdgesInShortestPath);
+            obj.SCpatientsResults.edgesInShortestPathSd = std2(patientsEdgesInShortestPath);
+            
+            obj.SCpatientsResults.characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
+            obj.SCpatientsResults.characteristicPathLengthSd = std2(patientsCharacteristicPathLength);
+            
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                
+                %The rows of this matrix corresponds to each patient in the
+                %group, and the columns, to the average path length of each
+                %node to the rest of the nodes
+                healthControlsShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.shortestPathLength);
+                
+                healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.edgesInShortestPath);
+                
+                healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).SCMatrix.characteristicPathLength;
+            end
+            obj.SChealthControlsResults.shortestPathLengthMean = mean2(healthControlsShortestPath);
+            obj.SChealthControlsResults.shortestPathLengthSd = std2(healthControlsShortestPath);
+            
+            obj.SChealthControlsResults.edgesInShortestPathMean = mean2(healthControlsEdgesInShortestPath);
+            obj.SChealthControlsResults.edgesInShortestPathSd = std2(healthControlsEdgesInShortestPath);
+            
+            obj.SChealthControlsResults.characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
+            obj.SChealthControlsResults.characteristicPathLengthSd = std2(healthControlsCharacteristicPathLength);
+            
+            % Perform the t-test
+            [obj.SCpatientsResults.shortestPathLengthTtest, obj.SCpatientsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
+            [obj.SChealthControlsResults.shortestPathLengthTtest, obj.SChealthControlsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
+            
+            [obj.SCpatientsResults.edgesInShortestPathTtest, obj.SCpatientsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
+            [obj.SChealthControlsResults.edgesInShortestPathTtest, obj.SChealthControlsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
+
+            [obj.SCpatientsResults.characteristicPathLengthTtest, obj.SCpatientsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            [obj.SChealthControlsResults.characteristicPathLengthTtest, obj.SChealthControlsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            
+        end
         
     end
     

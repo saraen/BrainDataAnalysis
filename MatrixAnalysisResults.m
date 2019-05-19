@@ -34,6 +34,25 @@ classdef MatrixAnalysisResults < handle
         clusteringCoefTtest  = 0
         clusteringCoefPvalue = 0
         
+        %Shortest path length
+        shortestPathLengthMean   = 0
+        shortestPathLengthSd     = 0
+        shortestPathLengthTtest  = 0
+        shortestPathLengthPvalue = 0
+        
+        %Number of edges in the shortest path
+        edgesInShortestPathMean   = 0
+        edgesInShortestPathSd     = 0
+        edgesInShortestPathTtest  = 0
+        edgesInShortestPathPvalue = 0
+        
+        %Characteristic Path length
+        characteristicPathLengthMean   = 0
+        characteristicPathLengthSd     = 0
+        characteristicPathLengthTtest  = 0
+        characteristicPathLengthPvalue = 0
+
+        
     end
     
     methods
