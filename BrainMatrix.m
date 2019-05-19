@@ -5,15 +5,15 @@ classdef BrainMatrix < handle
         matrix
         
         % graph properties
+        strengths
         degrees
         betweenness
+        efficiencyGlobal
         clusteringCoef
         density
-        shortestPath
-        efficiencyLocal
-        efficiencyGlobal
+        shortestPath        
         modularity
-        strengths
+        
     end
     
     methods
@@ -26,9 +26,9 @@ classdef BrainMatrix < handle
 %             obj.strengths        = strengths_und_sign(obj.matrix);
 %             obj.degrees          = degrees_und(obj.matrix);
 %             obj.betweenness      = betweenness_wei(weight_conversion(obj.matrix, 'lengths'));
-            obj.efficiencyGlobal = efficiency_wei(obj.matrix);
-%             obj.efficiencyLocal  = efficiency_wei(obj.matrix, 2);                
-%             obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
+%             obj.efficiencyGlobal = efficiency_wei(obj.matrix);            
+            obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
+            
 %             obj.density        = density_und(obj.matrix);
 %             obj.shortestPath   = distance_wei(obj.matrix);
 %             obj.modularity     = modularity_und(obj.matrix);

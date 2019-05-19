@@ -28,11 +28,11 @@ classdef MatrixAnalysisResults < handle
         efficiencyGlobalTtest  = 0
         efficiencyGlobalPvalue = 0
         
-        %Local efficiency
-        efficiencyLocalMean   = 0
-        efficiencyLocalSd     = 0
-        efficiencyLocalTtest  = 0
-        efficiencyLocalPvalue = 0
+        %Clustering coefficient
+        clusteringCoefMean   = 0
+        clusteringCoefSd     = 0
+        clusteringCoefTtest  = 0
+        clusteringCoefPvalue = 0
         
     end
     

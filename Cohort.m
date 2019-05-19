@@ -133,6 +133,20 @@ classdef Cohort < handle
             disp(['MS: ', num2str(obj.SCpatientsResults.efficiencyGlobalMean), ' (', num2str(obj.SCpatientsResults.efficiencyGlobalSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.efficiencyGlobalMean), ' (', num2str(obj.SChealthControlsResults.efficiencyGlobalSd), ')']);
             disp(['p-value: ', num2str(obj.SChealthControlsResults.efficiencyGlobalPvalue)]);
+            
+            disp('====================');
+            
+            disp('CLUSTERING COEFFICIENT - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.clusteringCoefMean), ' (', num2str(obj.FApatientsResults.clusteringCoefSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.clusteringCoefMean), ' (', num2str(obj.FAhealthControlsResults.clusteringCoefSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.clusteringCoefPvalue)]);
+            
+            disp('--------------------');
+            disp('CLUSTERING COEFFICIENT - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.clusteringCoefMean), ' (', num2str(obj.SCpatientsResults.clusteringCoefSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.clusteringCoefMean), ' (', num2str(obj.SChealthControlsResults.clusteringCoefSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.clusteringCoefPvalue)]);
+
            
             
         end
@@ -155,10 +169,17 @@ classdef Cohort < handle
 %             betweennessLinePlot(obj, 'SCMatrix');
 %             betweennessBoxPlot(obj, 'FAMatrix');
 %             betweennessBoxPlot(obj, 'SCMatrix');
-            
-            %Global efficiency
-            globalEfficiencyBoxPlot(obj, 'FAMatrix');
-            globalEfficiencyBoxPlot(obj, 'SCMatrix');
+%             
+%             %Global efficiency
+%             globalEfficiencyBoxPlot(obj, 'FAMatrix');
+%             globalEfficiencyBoxPlot(obj, 'SCMatrix');
+
+            %Clustering coefficient
+            clusteringCoefLinePlot(obj, 'FAMatrix');
+            clusteringCoefLinePlot(obj, 'SCMatrix');
+            clusteringCoefBoxPlot(obj, 'FAMatrix');
+            clusteringCoefBoxPlot(obj, 'SCMatrix');
+
             
         end
         
@@ -474,7 +495,6 @@ classdef Cohort < handle
                 
             end
                         
-            
             %Plot the values
             group = [    ones(size(healthControlsEfficiency));
                      2 * ones(size(patientsEfficiency))];
@@ -482,6 +502,97 @@ classdef Cohort < handle
             boxplot([healthControlsEfficiency; patientsEfficiency],group, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)
         end
+        
+        % This function shows a line plot of the mean values of the
+        % clustering coefficient of each node for each population
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function clusteringCoefLinePlot(obj, matrixType)
+            
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsClusteringCoef(i,:) = obj.patients(i).FAMatrix.clusteringCoef;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsClusteringCoef(i,:) = obj.healthControls(i).FAMatrix.clusteringCoef;
+                end
+                plotTitle = 'Clustering coefficient-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsClusteringCoef(i,:) = obj.patients(i).SCMatrix.clusteringCoef;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsClusteringCoef(i,:) = obj.healthControls(i).SCMatrix.clusteringCoef;
+                end
+                plotTitle = 'Clustering coefficient-SC Matrix';
+                
+            end
+            
+            % Then we obtain the mean value of each column of the clustering coef
+            % matrices. This is the mean betweenness value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsClusteringCoef);
+            hv_mean_by_node = mean(healthControlsClusteringCoef);
+            
+            % Now we plot the values
+            figure
+            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            title(plotTitle);
+            hold on;
+            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            legend('hv', 'ms');
+            ylabel('Mean clustering coefficient');
+            xlabel('Nodes');
+            
+            hold off
+        end
+        
+        % This function plots the Clustering coef boxplot of both
+        % groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function clusteringCoefBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsClusteringCoef(i,:) = obj.patients(i).FAMatrix.clusteringCoef;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsClusteringCoef(i,:) = obj.healthControls(i).FAMatrix.clusteringCoef;
+                end
+                
+                plotTitle = 'Clustering coefficient-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsClusteringCoef(i,:) = obj.patients(i).SCMatrix.clusteringCoef;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsClusteringCoef(i,:) = obj.healthControls(i).SCMatrix.clusteringCoef;
+                end
+                
+                plotTitle = 'Clustering coefficient-SC Matrix';
+                
+            end
+            
+            % Then we obtain the mean value of each column of the clustering coef
+            % matrices. This is the mean clustering coef value of each brain node
+            % across each population
+            ms_mean_by_node = mean(patientsClusteringCoef);
+            hv_mean_by_node = mean(healthControlsClusteringCoef);
+            
+            % Now we combine both groups of data into a matrix
+            X(:,1) = hv_mean_by_node;
+            X(:,2) = ms_mean_by_node;
+            
+            %Plot the values
+            figure
+            boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)
+        end
+
         
         function evaluateCohort(obj)
             evaluateFAMatrix(obj)
@@ -492,14 +603,16 @@ classdef Cohort < handle
 %             evaluateStrengthsFAMatrix(obj);
 %             evaluateDegreesFAMatrix(obj);
 %             evaluateBetweennessFAMatrix(obj);
-            evaluateGlobalEfficiencyFAMatrix(obj);
+%             evaluateGlobalEfficiencyFAMatrix(obj);
+            evaluateClusteringCoefFAMatrix(obj);
         end
         
         function evaluateSCMatrix(obj)
 %             evaluateStrengthsSCMatrix(obj);
 %             evaluateDegreesSCMatrix(obj);
 %             evaluateBetweennessSCMatrix(obj);
-            evaluateGlobalEfficiencySCMatrix(obj);
+%             evaluateGlobalEfficiencySCMatrix(obj);
+            evaluateClusteringCoefSCMatrix(obj);
         end
         
         
@@ -666,6 +779,48 @@ classdef Cohort < handle
             [obj.SChealthControlsResults.efficiencyGlobalTtest, obj.SChealthControlsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
             
         end
+        
+        function evaluateClusteringCoefFAMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsClusteringCoef(i,:) = obj.patients(i).FAMatrix.clusteringCoef;
+            end
+            obj.FApatientsResults.clusteringCoefMean = mean2(patientsClusteringCoef);
+            obj.FApatientsResults.clusteringCoefSd = std2(patientsClusteringCoef);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsClusteringCoef(i,:) = obj.healthControls(i).FAMatrix.clusteringCoef;
+            end
+            obj.FAhealthControlsResults.clusteringCoefMean = mean2(healthControlsClusteringCoef);
+            obj.FAhealthControlsResults.clusteringCoefSd = std2(healthControlsClusteringCoef);
+            
+            % Perform the t-test
+            [obj.FApatientsResults.clusteringCoefTtest, obj.FApatientsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
+            [obj.FAhealthControlsResults.clusteringCoefTtest, obj.FAhealthControlsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
+        end
+        
+        function evaluateClusteringCoefSCMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsClusteringCoef(i,:) = obj.patients(i).SCMatrix.clusteringCoef;
+            end
+            obj.SCpatientsResults.clusteringCoefMean = mean2(patientsClusteringCoef);
+            obj.SCpatientsResults.clusteringCoefSd = std2(patientsClusteringCoef);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsClusteringCoef(i,:) = obj.healthControls(i).SCMatrix.clusteringCoef;
+            end
+            obj.SChealthControlsResults.clusteringCoefMean = mean2(healthControlsClusteringCoef);
+            obj.SChealthControlsResults.clusteringCoefSd = std2(healthControlsClusteringCoef);
+            
+            % Perform the t-test
+            [obj.SCpatientsResults.clusteringCoefTtest, obj.SCpatientsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
+            [obj.SChealthControlsResults.clusteringCoefTtest, obj.SChealthControlsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
+            
+        end
+
         
         
     end
