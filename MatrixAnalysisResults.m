@@ -22,6 +22,18 @@ classdef MatrixAnalysisResults < handle
         betweennessTtest  = 0
         betweennessPvalue = 0
         
+        %Global efficiency
+        efficiencyGlobalMean   = 0
+        efficiencyGlobalSd     = 0
+        efficiencyGlobalTtest  = 0
+        efficiencyGlobalPvalue = 0
+        
+        %Local efficiency
+        efficiencyLocalMean   = 0
+        efficiencyLocalSd     = 0
+        efficiencyLocalTtest  = 0
+        efficiencyLocalPvalue = 0
+        
     end
     
     methods

@@ -106,7 +106,7 @@ classdef Cohort < handle
             disp('DEGREES - SC MATRIX');
             disp(['MS: ', num2str(obj.SCpatientsResults.degreesMean), ' (', num2str(obj.SCpatientsResults.degreesSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.degreesMean), ' (', num2str(obj.SChealthControlsResults.degreesSd), ')']);
-            disp(['p-value: ', num2str(obj.SChealthControlsResults.degreesPvalue)]);        
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.degreesPvalue)]);
             
             disp('====================');
             
@@ -119,12 +119,26 @@ classdef Cohort < handle
             disp('BETWEENNESS CENTRALITY - SC MATRIX');
             disp(['MS: ', num2str(obj.SCpatientsResults.betweennessMean), ' (', num2str(obj.SCpatientsResults.betweennessSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.betweennessMean), ' (', num2str(obj.SChealthControlsResults.betweennessSd), ')']);
-            disp(['p-value: ', num2str(obj.SChealthControlsResults.betweennessPvalue)]);            
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.betweennessPvalue)]);
+            
+            disp('====================');
+            
+            disp('GLOBAL EFFICIENCY - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.efficiencyGlobalMean), ' (', num2str(obj.FApatientsResults.efficiencyGlobalSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.efficiencyGlobalMean), ' (', num2str(obj.FAhealthControlsResults.efficiencyGlobalSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.efficiencyGlobalPvalue)]);
+            
+            disp('--------------------');
+            disp('GLOBAL EFFICIENCY - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.efficiencyGlobalMean), ' (', num2str(obj.SCpatientsResults.efficiencyGlobalSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.efficiencyGlobalMean), ' (', num2str(obj.SChealthControlsResults.efficiencyGlobalSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.efficiencyGlobalPvalue)]);
+           
             
         end
         
         function showPlots(obj)
-            %Strength
+%             %Strength
 %             strengthsLinePlot(obj, 'FAMatrix');
 %             strengthsLinePlot(obj, 'SCMatrix');
 %             strengthsBoxPlot(obj, 'FAMatrix');
@@ -136,11 +150,16 @@ classdef Cohort < handle
 %             degreesBoxPlot(obj, 'FAMatrix');
 %             degreesBoxPlot(obj, 'SCMatrix');
 %             
-            %Betweenness centrality
-            betweennessLinePlot(obj, 'FAMatrix');
-            betweennessLinePlot(obj, 'SCMatrix');
-            betweennessBoxPlot(obj, 'FAMatrix');
-            betweennessBoxPlot(obj, 'SCMatrix');
+%             %Betweenness centrality
+%             betweennessLinePlot(obj, 'FAMatrix');
+%             betweennessLinePlot(obj, 'SCMatrix');
+%             betweennessBoxPlot(obj, 'FAMatrix');
+%             betweennessBoxPlot(obj, 'SCMatrix');
+            
+            %Global efficiency
+            globalEfficiencyBoxPlot(obj, 'FAMatrix');
+            globalEfficiencyBoxPlot(obj, 'SCMatrix');
+            
         end
         
         % This function shows a line plot of the mean values of the
@@ -177,7 +196,7 @@ classdef Cohort < handle
                 hubLimitPatients = obj.SCpatientsResults.strengthMean + obj.SCpatientsResults.strengthSd;
                 hubLimitHealthControls = obj.SChealthControlsResults.strengthMean + obj.SChealthControlsResults.strengthSd;
                 
-                plotTitle = 'Strength-SC Matrix';                
+                plotTitle = 'Strength-SC Matrix';
                 
             end
             
@@ -200,7 +219,7 @@ classdef Cohort < handle
             % Plot the hub limits
             plot(hubLimitHealthControls*ones(80), 'k', 'LineWidth', 2);
             plot(hubLimitPatients*ones(80), 'b', 'LineWidth', 2);
- 
+            
             hold off
         end
         
@@ -227,7 +246,7 @@ classdef Cohort < handle
                     healthControlsStrengths(i,:) = obj.healthControls(i).SCMatrix.strengths;
                 end
                 
-                plotTitle = 'Strength-SC Matrix';                
+                plotTitle = 'Strength-SC Matrix';
                 
             end
             
@@ -244,9 +263,9 @@ classdef Cohort < handle
             %Plot the values
             figure
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
-            title(plotTitle)                     
+            title(plotTitle)
         end
-
+        
         % This function shows a line plot of the mean values of the
         % degrees of each node for each population
         %
@@ -260,7 +279,7 @@ classdef Cohort < handle
                 end
                 for i = 1:length(obj.healthControls)
                     healthControlsDegrees(i,:) = obj.healthControls(i).FAMatrix.degrees;
-                end                
+                end
                 plotTitle = 'Degrees-FA Matrix';
                 
             elseif strcmp(matrixType, 'SCMatrix')
@@ -269,8 +288,8 @@ classdef Cohort < handle
                 end
                 for i = 1:length(obj.healthControls)
                     healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
-                end              
-                plotTitle = 'Degrees-SC Matrix';                
+                end
+                plotTitle = 'Degrees-SC Matrix';
                 
             end
             
@@ -316,7 +335,7 @@ classdef Cohort < handle
                     healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
                 end
                 
-                plotTitle = 'Degrees-SC Matrix';                
+                plotTitle = 'Degrees-SC Matrix';
                 
             end
             
@@ -333,9 +352,9 @@ classdef Cohort < handle
             %Plot the values
             figure
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
-            title(plotTitle)                     
+            title(plotTitle)
         end
-
+        
         % This function shows a line plot of the mean values of the
         % betweenness centrality of each node for each population
         %
@@ -349,7 +368,7 @@ classdef Cohort < handle
                 end
                 for i = 1:length(obj.healthControls)
                     healthControlsBetweenness(i,:) = obj.healthControls(i).FAMatrix.betweenness;
-                end                
+                end
                 plotTitle = 'Betweenness centrality-FA Matrix';
                 
             elseif strcmp(matrixType, 'SCMatrix')
@@ -358,8 +377,8 @@ classdef Cohort < handle
                 end
                 for i = 1:length(obj.healthControls)
                     healthControlsBetweenness(i,:) = obj.healthControls(i).SCMatrix.betweenness;
-                end              
-                plotTitle = 'Betweenness centrality-SC Matrix';                
+                end
+                plotTitle = 'Betweenness centrality-SC Matrix';
                 
             end
             
@@ -406,7 +425,7 @@ classdef Cohort < handle
                     healthControlsBetweenness(i,:) = obj.healthControls(i).SCMatrix.betweenness;
                 end
                 
-                plotTitle = 'Betweenness centrality-SC Matrix';                
+                plotTitle = 'Betweenness centrality-SC Matrix';
                 
             end
             
@@ -423,7 +442,45 @@ classdef Cohort < handle
             %Plot the values
             figure
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
-            title(plotTitle)                     
+            title(plotTitle)
+        end
+        
+                
+        % This function plots the global efficiency boxplot of both
+        % groups
+        %
+        % @param matrixType must be either 'FAMatrix' or 'SCMatrix'
+        function globalEfficiencyBoxPlot(obj, matrixType)
+            % First we need to combine all degrees vectors into a matrix
+            if strcmp(matrixType, 'FAMatrix') == true
+                for i = 1:length(obj.patients)
+                    patientsEfficiency(i,:) = obj.patients(i).FAMatrix.efficiencyGlobal;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEfficiency(i,:) = obj.healthControls(i).FAMatrix.efficiencyGlobal;
+                end
+                             
+                plotTitle = 'Global efficiency-FA Matrix';
+                
+            elseif strcmp(matrixType, 'SCMatrix')
+                for i = 1:length(obj.patients)
+                    patientsEfficiency(i,:) = obj.patients(i).SCMatrix.efficiencyGlobal;
+                end
+                for i = 1:length(obj.healthControls)
+                    healthControlsEfficiency(i,:) = obj.healthControls(i).SCMatrix.efficiencyGlobal;
+                end
+                
+                plotTitle = 'Global efficiency-SC Matrix';
+                
+            end
+                        
+            
+            %Plot the values
+            group = [    ones(size(healthControlsEfficiency));
+                     2 * ones(size(patientsEfficiency))];
+            figure
+            boxplot([healthControlsEfficiency; patientsEfficiency],group, 'Color', 'k', 'Labels',{'HV','MS'})
+            title(plotTitle)
         end
         
         function evaluateCohort(obj)
@@ -432,15 +489,17 @@ classdef Cohort < handle
         end
         
         function evaluateFAMatrix(obj)
-            evaluateStrengthsFAMatrix(obj);
-            evaluateDegreesFAMatrix(obj);
-            evaluateBetweennessFAMatrix(obj);
+%             evaluateStrengthsFAMatrix(obj);
+%             evaluateDegreesFAMatrix(obj);
+%             evaluateBetweennessFAMatrix(obj);
+            evaluateGlobalEfficiencyFAMatrix(obj);
         end
         
         function evaluateSCMatrix(obj)
-            evaluateStrengthsSCMatrix(obj);
-            evaluateDegreesSCMatrix(obj);
-            evaluateBetweennessSCMatrix(obj);
+%             evaluateStrengthsSCMatrix(obj);
+%             evaluateDegreesSCMatrix(obj);
+%             evaluateBetweennessSCMatrix(obj);
+            evaluateGlobalEfficiencySCMatrix(obj);
         end
         
         
@@ -522,7 +581,7 @@ classdef Cohort < handle
             % Perform the t-test
             [obj.SCpatientsResults.degreesTtest, obj.SCpatientsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
             [obj.SChealthControlsResults.degreesTtest, obj.SChealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
-
+            
         end
         
         
@@ -564,7 +623,48 @@ classdef Cohort < handle
             % Perform the t-test
             [obj.SCpatientsResults.betweennessTtest, obj.SCpatientsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
             [obj.SChealthControlsResults.betweennessTtest, obj.SChealthControlsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
-
+            
+        end
+        
+        function evaluateGlobalEfficiencyFAMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsEfficiency(i,:) = obj.patients(i).FAMatrix.efficiencyGlobal;
+            end
+            obj.FApatientsResults.efficiencyGlobalMean = mean(patientsEfficiency);
+            obj.FApatientsResults.efficiencyGlobalSd = std(patientsEfficiency);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsEfficiency(i,:) = obj.healthControls(i).FAMatrix.efficiencyGlobal;
+            end
+            obj.FAhealthControlsResults.efficiencyGlobalMean = mean(healthControlsEfficiency);
+            obj.FAhealthControlsResults.efficiencyGlobalSd = std(healthControlsEfficiency);
+            
+            % Perform the t-test
+            [obj.FApatientsResults.efficiencyGlobalTtest, obj.FApatientsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
+            [obj.FAhealthControlsResults.efficiencyGlobalTtest, obj.FAhealthControlsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
+        end
+        
+        function evaluateGlobalEfficiencySCMatrix(obj)
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsEfficiency(i,:) = obj.patients(i).SCMatrix.efficiencyGlobal;
+            end
+            obj.SCpatientsResults.efficiencyGlobalMean = mean(patientsEfficiency);
+            obj.SCpatientsResults.efficiencyGlobalSd = std(patientsEfficiency);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsEfficiency(i,:) = obj.healthControls(i).SCMatrix.efficiencyGlobal;
+            end
+            obj.SChealthControlsResults.efficiencyGlobalMean = mean(healthControlsEfficiency);
+            obj.SChealthControlsResults.efficiencyGlobalSd = std(healthControlsEfficiency);
+            
+            % Perform the t-test
+            [obj.SCpatientsResults.efficiencyGlobalTtest, obj.SCpatientsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
+            [obj.SChealthControlsResults.efficiencyGlobalTtest, obj.SChealthControlsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
+            
         end
         
         
