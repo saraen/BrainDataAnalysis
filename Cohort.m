@@ -188,34 +188,58 @@ classdef Cohort < handle
 
         end
         
+                function evaluateCohort(obj)
+            evaluateFAMatrix(obj)
+            evaluateSCMatrix(obj)
+        end
+        
+        function evaluateFAMatrix(obj)
+%             evaluateStrengths(obj, 'FAMatrix');
+            evaluateDegrees(obj, 'FAMatrix');
+%             evaluateBetweenness(obj, 'FAMatrix');
+%             evaluateGlobalEfficiency(obj, 'FAMatrix');
+%             evaluateClusteringCoef(obj, 'FAMatrix');
+%             evaluateShortestPath(obj, 'FAMatrix');
+        end
+        
+        function evaluateSCMatrix(obj)
+%             evaluateStrengths(obj, 'SCMatrix');
+            evaluateDegrees(obj, 'SCMatrix');
+%             evaluateBetweenness(obj, 'SCMatrix');
+%             evaluateGlobalEfficiency(obj, 'SCMatrix');
+%             evaluateClusteringCoef(obj, 'SCMatrix');
+%             evaluateShortestPath(obj, 'SCMatrix');
+        end
+        
+        
         function showPlots(obj)
-%             %Strength
-%             strengthsLinePlot(obj, 'FAMatrix');
-%             strengthsLinePlot(obj, 'SCMatrix');
-%             strengthsBoxPlot(obj, 'FAMatrix');
-%             strengthsBoxPlot(obj, 'SCMatrix');
-%             
-%             %Degrees
-%             degreesLinePlot(obj, 'FAMatrix');
-%             degreesLinePlot(obj, 'SCMatrix');
-%             degreesBoxPlot(obj, 'FAMatrix');
-%             degreesBoxPlot(obj, 'SCMatrix');
-%             
-%             %Betweenness centrality
-%             betweennessLinePlot(obj, 'FAMatrix');
-%             betweennessLinePlot(obj, 'SCMatrix');
-%             betweennessBoxPlot(obj, 'FAMatrix');
-%             betweennessBoxPlot(obj, 'SCMatrix');
-%             
-%             %Global efficiency
-%             globalEfficiencyBoxPlot(obj, 'FAMatrix');
-%             globalEfficiencyBoxPlot(obj, 'SCMatrix');
-% 
-%             %Clustering coefficient
-%             clusteringCoefLinePlot(obj, 'FAMatrix');
-%             clusteringCoefLinePlot(obj, 'SCMatrix');
-%             clusteringCoefBoxPlot(obj, 'FAMatrix');
-%             clusteringCoefBoxPlot(obj, 'SCMatrix');
+            %Strength
+            strengthsLinePlot(obj, 'FAMatrix');
+            strengthsLinePlot(obj, 'SCMatrix');
+            strengthsBoxPlot(obj, 'FAMatrix');
+            strengthsBoxPlot(obj, 'SCMatrix');
+            
+            %Degrees
+            degreesLinePlot(obj, 'FAMatrix');
+            degreesLinePlot(obj, 'SCMatrix');
+            degreesBoxPlot(obj, 'FAMatrix');
+            degreesBoxPlot(obj, 'SCMatrix');
+            
+            %Betweenness centrality
+            betweennessLinePlot(obj, 'FAMatrix');
+            betweennessLinePlot(obj, 'SCMatrix');
+            betweennessBoxPlot(obj, 'FAMatrix');
+            betweennessBoxPlot(obj, 'SCMatrix');
+            
+            %Global efficiency
+            globalEfficiencyBoxPlot(obj, 'FAMatrix');
+            globalEfficiencyBoxPlot(obj, 'SCMatrix');
+
+            %Clustering coefficient
+            clusteringCoefLinePlot(obj, 'FAMatrix');
+            clusteringCoefLinePlot(obj, 'SCMatrix');
+            clusteringCoefBoxPlot(obj, 'FAMatrix');
+            clusteringCoefBoxPlot(obj, 'SCMatrix');
 
             %Shortest Path Length
             shortestPathLinePlot(obj, 'FAMatrix');
@@ -235,6 +259,16 @@ classdef Cohort < handle
 
             
         end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %
+        %
+        %                 PLOTS FUNCTIONS
+        %
+        %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         
         % This function shows a line plot of the mean values of the
         % strengths of each node for each population
@@ -861,152 +895,108 @@ classdef Cohort < handle
             title(plotTitle)
         end
 
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %
+        %
+        %                 EVALUATE PROPERTIES FUNCTIONS
+        %
+        %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function evaluateCohort(obj)
-            evaluateFAMatrix(obj)
-            evaluateSCMatrix(obj)
-        end
-        
-        function evaluateFAMatrix(obj)
-%             evaluateStrengthsFAMatrix(obj);
-%             evaluateDegreesFAMatrix(obj);
-%             evaluateBetweennessFAMatrix(obj);
-%             evaluateGlobalEfficiencyFAMatrix(obj);
-%             evaluateClusteringCoefFAMatrix(obj);
-            evaluateShortestPathFAMatrix(obj);
-        end
-        
-        function evaluateSCMatrix(obj)
-%             evaluateStrengthsSCMatrix(obj);
-%             evaluateDegreesSCMatrix(obj);
-%             evaluateBetweennessSCMatrix(obj);
-%             evaluateGlobalEfficiencySCMatrix(obj);
-%             evaluateClusteringCoefSCMatrix(obj);
-            evaluateShortestPathSCMatrix(obj);
-        end
-        
-        
-        function evaluateStrengthsFAMatrix(obj)
+        function evaluateStrengths(obj, matrixType)
+            patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            
             % First evaluate the strength in the PATIENTS group
             for i = 1:length(obj.patients)
-                patientsStrengths(i,:) = obj.patients(i).FAMatrix.strengths;
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).strengths;
             end
-            obj.FApatientsResults.strengthMean = mean2(patientsStrengths);
-            obj.FApatientsResults.strengthSd = std2(patientsStrengths);
+            obj.getPatientsResults(matrixType).strengthMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).strengthSd   = std2(patientsValues);
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsStrengths(i,:) = obj.healthControls(i).FAMatrix.strengths;
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).strengths;
             end
-            obj.FAhealthControlsResults.strengthMean = mean2(healthControlsStrengths);
-            obj.FAhealthControlsResults.strengthSd = std2(healthControlsStrengths);
+            obj.getHealthControlsResults(matrixType).strengthMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).strengthSd   = std2(healthControlsValues);
+            
+            ms_mean_by_node = mean(patientsValues);
+            hv_mean_by_node = mean(healthControlsValues);
             
             % Perform the t-test
-            [obj.FApatientsResults.strengthTtest, obj.FApatientsResults.strengthPvalue] = ttest2( mean(healthControlsStrengths, 2), mean(patientsStrengths,2));
-            [obj.FAhealthControlsResults.strengthTtest, obj.FAhealthControlsResults.strengthPvalue] = ttest2( mean(healthControlsStrengths, 2), mean(patientsStrengths,2));
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
+            
+            obj.getPatientsResults(matrixType).strengthTtest        = h;
+            obj.getPatientsResults(matrixType).strengthPvalue       = p;   
+            
+            obj.getHealthControlsResults(matrixType).strengthTtest  = h;
+            obj.getHealthControlsResults(matrixType).strengthPvalue = p;
         end
         
-        function evaluateStrengthsSCMatrix(obj)
-            % First evaluate the strength in the patients group
-            for i = 1:length(obj.patients)
-                patientsStrengths(i,:) = obj.patients(i).SCMatrix.strengths;
-            end
-            obj.SCpatientsResults.strengthMean = mean2(patientsStrengths);
-            obj.SCpatientsResults.strengthSd = std2(patientsStrengths);
+
+        function evaluateDegrees(obj, matrixType)       
+            patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             
-            % Then evaluate the health controls group
-            for i = 1:length(obj.healthControls)
-                healthControlsStrengths(i,:) = obj.healthControls(i).SCMatrix.strengths;
-            end
-            obj.SChealthControlsResults.strengthMean = mean2(healthControlsStrengths);
-            obj.SChealthControlsResults.strengthSd = std2(healthControlsStrengths);
-            
-            % Perform the t-test
-            [obj.SCpatientsResults.strengthTtest, obj.SCpatientsResults.strengthPvalue] = ttest2( mean(healthControlsStrengths, 2), mean(patientsStrengths,2));
-            [obj.SChealthControlsResults.strengthTtest, obj.SChealthControlsResults.strengthPvalue] = ttest2( mean(healthControlsStrengths, 2), mean(patientsStrengths,2));
-        end
-        
-        function evaluateDegreesFAMatrix(obj)
-            % First evaluate the PATIENTS group
+            % First evaluate the strength in the PATIENTS group
             for i = 1:length(obj.patients)
-                patientsDegrees(i,:) = obj.patients(i).FAMatrix.degrees;
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).degrees;
             end
-            obj.FApatientsResults.degreesMean = mean2(patientsDegrees);
-            obj.FApatientsResults.degreesSd = std2(patientsDegrees);
+            obj.getPatientsResults(matrixType).degreesMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).degreesSd   = std2(patientsValues);
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsDegrees(i,:) = obj.healthControls(i).FAMatrix.degrees;
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).degrees;
             end
-            obj.FAhealthControlsResults.degreesMean = mean2(healthControlsDegrees);
-            obj.FAhealthControlsResults.degreesSd = std2(healthControlsDegrees);
+            obj.getHealthControlsResults(matrixType).degreesMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).degreesSd   = std2(healthControlsValues);
+            
+            ms_mean_by_node = mean(patientsValues);
+            hv_mean_by_node = mean(healthControlsValues);
             
             % Perform the t-test
-            [obj.FApatientsResults.degreesTtest, obj.FApatientsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
-            [obj.FAhealthControlsResults.degreesTtest, obj.FAhealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
-        end
-        
-        function evaluateDegreesSCMatrix(obj)
-            % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                patientsDegrees(i,:) = obj.patients(i).SCMatrix.degrees;
-            end
-            obj.SCpatientsResults.degreesMean = mean2(patientsDegrees);
-            obj.SCpatientsResults.degreesSd = std2(patientsDegrees);
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
-            % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
-                healthControlsDegrees(i,:) = obj.healthControls(i).SCMatrix.degrees;
-            end
-            obj.SChealthControlsResults.degreesMean = mean2(healthControlsDegrees);
-            obj.SChealthControlsResults.degreesSd = std2(healthControlsDegrees);
+            obj.getPatientsResults(matrixType).degreesTtest        = h;
+            obj.getPatientsResults(matrixType).degreesPvalue       = p;   
             
-            % Perform the t-test
-            [obj.SCpatientsResults.degreesTtest, obj.SCpatientsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
-            [obj.SChealthControlsResults.degreesTtest, obj.SChealthControlsResults.degreesPvalue] = ttest2( mean(healthControlsDegrees, 2), mean(patientsDegrees,2));
-            
+            obj.getHealthControlsResults(matrixType).degreesTtest  = h;
+            obj.getHealthControlsResults(matrixType).degreesPvalue = p;
         end
         
         
-        function evaluateBetweennessFAMatrix(obj)
-            % First evaluate the PATIENTS group
+        function evaluateBetweenness(obj, matrixType)
+            patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            
+            % First evaluate the strength in the PATIENTS group
             for i = 1:length(obj.patients)
-                patientsBetweenness(i,:) = obj.patients(i).FAMatrix.betweenness;
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).betweenness;
             end
-            obj.FApatientsResults.betweennessMean = mean2(patientsBetweenness);
-            obj.FApatientsResults.betweennessSd = std2(patientsBetweenness);
+            obj.getPatientsResults(matrixType).betweennessMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).betweennessSd   = std2(patientsValues);
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsBetweenness(i,:) = obj.healthControls(i).FAMatrix.betweenness;
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).betweenness;
             end
-            obj.FAhealthControlsResults.betweennessMean = mean2(healthControlsBetweenness);
-            obj.FAhealthControlsResults.betweennessSd = std2(healthControlsBetweenness);
+            obj.getHealthControlsResults(matrixType).betweennessMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).betweennessSd   = std2(healthControlsValues);
+            
+            ms_mean_by_node = mean(patientsValues);
+            hv_mean_by_node = mean(healthControlsValues);
             
             % Perform the t-test
-            [obj.FApatientsResults.betweennessTtest, obj.FApatientsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
-            [obj.FAhealthControlsResults.betweennessTtest, obj.FAhealthControlsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
-        end
-        
-        function evaluateBetweennessSCMatrix(obj)
-            % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                patientsBetweenness(i,:) = obj.patients(i).SCMatrix.betweenness;
-            end
-            obj.SCpatientsResults.betweennessMean = mean2(patientsBetweenness);
-            obj.SCpatientsResults.betweennessSd = std2(patientsBetweenness);
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
-            % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
-                healthControlsBetweenness(i,:) = obj.healthControls(i).SCMatrix.betweenness;
-            end
-            obj.SChealthControlsResults.betweennessMean = mean2(healthControlsBetweenness);
-            obj.SChealthControlsResults.betweennessSd = std2(healthControlsBetweenness);
+            obj.getPatientsResults(matrixType).betweennessTtest        = h;
+            obj.getPatientsResults(matrixType).betweennessPvalue       = p;   
             
-            % Perform the t-test
-            [obj.SCpatientsResults.betweennessTtest, obj.SCpatientsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
-            [obj.SChealthControlsResults.betweennessTtest, obj.SChealthControlsResults.betweennessPvalue] = ttest2( mean(healthControlsBetweenness, 2), mean(patientsBetweenness,2));
-            
+            obj.getHealthControlsResults(matrixType).betweennessTtest  = h;
+            obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
         end
         
         function evaluateGlobalEfficiencyFAMatrix(obj)
@@ -1207,6 +1197,23 @@ classdef Cohort < handle
             [obj.SCpatientsResults.characteristicPathLengthTtest, obj.SCpatientsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
             [obj.SChealthControlsResults.characteristicPathLengthTtest, obj.SChealthControlsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
             
+        end
+        
+        
+        function patientsMatrixAnalysisResults = getPatientsResults (obj, matrixType)
+            if strcmp(matrixType, 'FAMatrix') == true
+                patientsMatrixAnalysisResults = obj.FApatientsResults;
+            elseif strcmp(matrixType, 'SCMatrix') == true
+                patientsMatrixAnalysisResults = obj.SCpatientsResults;
+            end
+        end
+        
+        function healthControlsMatrixAnalysisResults = getHealthControlsResults (obj, matrixType)
+            if strcmp(matrixType, 'FAMatrix') == true
+                healthControlsMatrixAnalysisResults = obj.FAhealthControlsResults;
+            elseif strcmp(matrixType, 'SCMatrix') == true
+                healthControlsMatrixAnalysisResults = obj.SChealthControlsResults;
+            end
         end
         
     end
