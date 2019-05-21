@@ -19,6 +19,14 @@ classdef Person < handle
             obj.FAMatrix.analize();
             obj.SCMatrix.analize();
         end
+        
+        function [matrix] = getBrainMatrix(obj, matrixType)
+            if strcmp(matrixType, 'FAMatrix') == true
+                matrix = obj.FAMatrix;
+            elseif strcmp(matrixType, 'SCMatrix') == true
+                matrix = obj.SCMatrix;
+            end
+        end
     end
     
 end
