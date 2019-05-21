@@ -13,8 +13,6 @@ classdef BrainMatrix < handle
         shortestPathLength
         edgesInShortestPath
         characteristicPathLength
-        density        
-        modularity
         
     end
     
@@ -22,21 +20,19 @@ classdef BrainMatrix < handle
         % Constuctor
         function obj = BrainMatrix ( matrix )
             obj.matrix = matrix;
+            
+            % Replace all the negative values with zeros
+            obj.matrix(obj.matrix<0) = 0;            
         end
         
-        function analize(obj)   
-%             obj.strengths        = strengths_und_sign(obj.matrix);
-%             obj.degrees          = degrees_und(obj.matrix);
-%             obj.betweenness      = betweenness_wei(weight_conversion(obj.matrix, 'lengths'));
-%             obj.efficiencyGlobal = efficiency_wei(obj.matrix);            
-%             obj.clusteringCoef = clustering_coef_wu_sign(obj.matrix);
+        function analize(obj)
+            obj.strengths        = strengths_und(obj.matrix);
+            obj.degrees          = degrees_und(obj.matrix);
+            obj.betweenness      = betweenness_wei(weight_conversion(obj.matrix, 'lengths'));
+            obj.efficiencyGlobal = efficiency_wei(obj.matrix);
+            obj.clusteringCoef   = clustering_coef_wu(weight_conversion(obj.matrix, 'normalize'));
             [obj.shortestPathLength, obj.edgesInShortestPath]   = distance_wei(weight_conversion(obj.matrix, 'lengths'));
             obj.characteristicPathLength = mean2(obj.shortestPathLength); %The average shortest path length is the characteristic path length of the network
-
-            
-%             obj.density        = density_und(obj.matrix);
-%             obj.modularity     = modularity_und(obj.matrix);
-            
         end
     end
     
