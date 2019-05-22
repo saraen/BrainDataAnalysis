@@ -188,25 +188,25 @@ classdef Cohort < handle
 
         end
         
-                function evaluateCohort(obj)
+        function evaluateCohort(obj)
             evaluateFAMatrix(obj)
             evaluateSCMatrix(obj)
         end
         
         function evaluateFAMatrix(obj)
 %             evaluateStrengths(obj, 'FAMatrix');
-            evaluateDegrees(obj, 'FAMatrix');
+%             evaluateDegrees(obj, 'FAMatrix');
 %             evaluateBetweenness(obj, 'FAMatrix');
-%             evaluateGlobalEfficiency(obj, 'FAMatrix');
+            evaluateGlobalEfficiency(obj, 'FAMatrix');
 %             evaluateClusteringCoef(obj, 'FAMatrix');
 %             evaluateShortestPath(obj, 'FAMatrix');
         end
         
         function evaluateSCMatrix(obj)
 %             evaluateStrengths(obj, 'SCMatrix');
-            evaluateDegrees(obj, 'SCMatrix');
+%             evaluateDegrees(obj, 'SCMatrix');
 %             evaluateBetweenness(obj, 'SCMatrix');
-%             evaluateGlobalEfficiency(obj, 'SCMatrix');
+            evaluateGlobalEfficiency(obj, 'SCMatrix');
 %             evaluateClusteringCoef(obj, 'SCMatrix');
 %             evaluateShortestPath(obj, 'SCMatrix');
         end
@@ -940,7 +940,7 @@ classdef Cohort < handle
             patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
             healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             
-            % First evaluate the strength in the PATIENTS group
+            % First evaluate the PATIENTS group
             for i = 1:length(obj.patients)
                 patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).degrees;
             end
@@ -972,7 +972,7 @@ classdef Cohort < handle
             patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
             healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             
-            % First evaluate the strength in the PATIENTS group
+            % First evaluate the PATIENTS group
             for i = 1:length(obj.patients)
                 patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).betweenness;
             end
@@ -999,45 +999,35 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
         end
         
-        function evaluateGlobalEfficiencyFAMatrix(obj)
+        function evaluateGlobalEfficiency(obj, matrixType)
+            % Each person has one single global efficiency value, that is
+            % why there will be a one dimensional vector for each group of
+            % persons
+            patientsValues       = zeros(length(obj.patients), 1);
+            healthControlsValues = zeros(length(obj.healthControls), 1);
+            
             % First evaluate the PATIENTS group
             for i = 1:length(obj.patients)
-                patientsEfficiency(i,:) = obj.patients(i).FAMatrix.efficiencyGlobal;
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).efficiencyGlobal;
             end
-            obj.FApatientsResults.efficiencyGlobalMean = mean(patientsEfficiency);
-            obj.FApatientsResults.efficiencyGlobalSd = std(patientsEfficiency);
+            obj.getPatientsResults(matrixType).efficiencyGlobalMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).efficiencyGlobalSd   = std2(patientsValues);
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsEfficiency(i,:) = obj.healthControls(i).FAMatrix.efficiencyGlobal;
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).efficiencyGlobal;
             end
-            obj.FAhealthControlsResults.efficiencyGlobalMean = mean(healthControlsEfficiency);
-            obj.FAhealthControlsResults.efficiencyGlobalSd = std(healthControlsEfficiency);
-            
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalSd   = std2(healthControlsValues);
+                        
             % Perform the t-test
-            [obj.FApatientsResults.efficiencyGlobalTtest, obj.FApatientsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
-            [obj.FAhealthControlsResults.efficiencyGlobalTtest, obj.FAhealthControlsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
-        end
-        
-        function evaluateGlobalEfficiencySCMatrix(obj)
-            % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                patientsEfficiency(i,:) = obj.patients(i).SCMatrix.efficiencyGlobal;
-            end
-            obj.SCpatientsResults.efficiencyGlobalMean = mean(patientsEfficiency);
-            obj.SCpatientsResults.efficiencyGlobalSd = std(patientsEfficiency);
+            [h, p] = ttest2( healthControlsValues, patientsValues);
             
-            % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
-                healthControlsEfficiency(i,:) = obj.healthControls(i).SCMatrix.efficiencyGlobal;
-            end
-            obj.SChealthControlsResults.efficiencyGlobalMean = mean(healthControlsEfficiency);
-            obj.SChealthControlsResults.efficiencyGlobalSd = std(healthControlsEfficiency);
+            obj.getPatientsResults(matrixType).efficiencyGlobalTtest        = h;
+            obj.getPatientsResults(matrixType).efficiencyGlobalPvalue       = p;   
             
-            % Perform the t-test
-            [obj.SCpatientsResults.efficiencyGlobalTtest, obj.SCpatientsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
-            [obj.SChealthControlsResults.efficiencyGlobalTtest, obj.SChealthControlsResults.efficiencyGlobalPvalue] = ttest2( healthControlsEfficiency, patientsEfficiency);
-            
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalTtest  = h;
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;
         end
         
         function evaluateClusteringCoefFAMatrix(obj)
