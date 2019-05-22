@@ -197,18 +197,18 @@ classdef Cohort < handle
 %             evaluateStrengths(obj, 'FAMatrix');
 %             evaluateDegrees(obj, 'FAMatrix');
 %             evaluateBetweenness(obj, 'FAMatrix');
-            evaluateGlobalEfficiency(obj, 'FAMatrix');
+%             evaluateGlobalEfficiency(obj, 'FAMatrix');
 %             evaluateClusteringCoef(obj, 'FAMatrix');
-%             evaluateShortestPath(obj, 'FAMatrix');
+            evaluateShortestPath(obj, 'FAMatrix');
         end
         
         function evaluateSCMatrix(obj)
 %             evaluateStrengths(obj, 'SCMatrix');
 %             evaluateDegrees(obj, 'SCMatrix');
 %             evaluateBetweenness(obj, 'SCMatrix');
-            evaluateGlobalEfficiency(obj, 'SCMatrix');
+%             evaluateGlobalEfficiency(obj, 'SCMatrix');
 %             evaluateClusteringCoef(obj, 'SCMatrix');
-%             evaluateShortestPath(obj, 'SCMatrix');
+            evaluateShortestPath(obj, 'SCMatrix');
         end
         
         
@@ -1030,46 +1030,37 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;
         end
         
-        function evaluateClusteringCoefFAMatrix(obj)
+        function evaluateClusteringCoef(obj, matrixType)
+            patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            
             % First evaluate the PATIENTS group
             for i = 1:length(obj.patients)
-                patientsClusteringCoef(i,:) = obj.patients(i).FAMatrix.clusteringCoef;
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).clusteringCoef;
             end
-            obj.FApatientsResults.clusteringCoefMean = mean2(patientsClusteringCoef);
-            obj.FApatientsResults.clusteringCoefSd = std2(patientsClusteringCoef);
+            obj.getPatientsResults(matrixType).clusteringCoefMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).clusteringCoefSd   = std2(patientsValues);
             
             % Then evaluate the HEALTH CONTROLS group
             for i = 1:length(obj.healthControls)
-                healthControlsClusteringCoef(i,:) = obj.healthControls(i).FAMatrix.clusteringCoef;
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).clusteringCoef;
             end
-            obj.FAhealthControlsResults.clusteringCoefMean = mean2(healthControlsClusteringCoef);
-            obj.FAhealthControlsResults.clusteringCoefSd = std2(healthControlsClusteringCoef);
+            obj.getHealthControlsResults(matrixType).clusteringCoefMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).clusteringCoefSd   = std2(healthControlsValues);
+            
+            ms_mean_by_node = mean(patientsValues);
+            hv_mean_by_node = mean(healthControlsValues);
             
             % Perform the t-test
-            [obj.FApatientsResults.clusteringCoefTtest, obj.FApatientsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
-            [obj.FAhealthControlsResults.clusteringCoefTtest, obj.FAhealthControlsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
+            
+            obj.getPatientsResults(matrixType).clusteringCoefTtest        = h;
+            obj.getPatientsResults(matrixType).clusteringCoefPvalue       = p;   
+            
+            obj.getHealthControlsResults(matrixType).clusteringCoefTtest  = h;
+            obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
         end
         
-        function evaluateClusteringCoefSCMatrix(obj)
-            % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                patientsClusteringCoef(i,:) = obj.patients(i).SCMatrix.clusteringCoef;
-            end
-            obj.SCpatientsResults.clusteringCoefMean = mean2(patientsClusteringCoef);
-            obj.SCpatientsResults.clusteringCoefSd = std2(patientsClusteringCoef);
-            
-            % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
-                healthControlsClusteringCoef(i,:) = obj.healthControls(i).SCMatrix.clusteringCoef;
-            end
-            obj.SChealthControlsResults.clusteringCoefMean = mean2(healthControlsClusteringCoef);
-            obj.SChealthControlsResults.clusteringCoefSd = std2(healthControlsClusteringCoef);
-            
-            % Perform the t-test
-            [obj.SCpatientsResults.clusteringCoefTtest, obj.SCpatientsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
-            [obj.SChealthControlsResults.clusteringCoefTtest, obj.SChealthControlsResults.clusteringCoefPvalue] = ttest2( mean(healthControlsClusteringCoef, 2), mean(patientsClusteringCoef,2));
-            
-        end
         
         %This function evaluates the shortest path lengths, the number of
         %edges in the shortest paths and the characteristic path length of
