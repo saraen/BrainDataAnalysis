@@ -1061,125 +1061,88 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
         end
         
-        
-        %This function evaluates the shortest path lengths, the number of
-        %edges in the shortest paths and the characteristic path length of
-        %the network
-        function evaluateShortestPathFAMatrix(obj)
+        function evaluateShortestPath(obj, matrixType)
+            patientsShortestPath              = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            patientsEdgesInShortestPath       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            patientsCharacteristicPathLength  = zeros(length(obj.patients), 1);
+
+            healthControlsShortestPath              = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsEdgesInShortestPath       = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsCharacteristicPathLength  = zeros(length(obj.healthControls), 1);
+                        
             % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                
+            for i = 1:length(obj.patients)                
                 %The rows of this matrix corresponds to each patient in the
                 %group, and the columns, to the average path length of each
                 %node to the rest of the nodes
-                patientsShortestPath(i,:) = mean(obj.patients(i).FAMatrix.shortestPathLength);
-                
-                patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).FAMatrix.edgesInShortestPath);
-                
-                patientsCharacteristicPathLength(i,:) = obj.patients(i).FAMatrix.characteristicPathLength;                
+                patientsShortestPath(i,:)             = mean(obj.patients(i).getBrainMatrix(matrixType).shortestPathLength);                
+                patientsEdgesInShortestPath(i,:)      = mean(obj.patients(i).getBrainMatrix(matrixType).edgesInShortestPath);                
+                patientsCharacteristicPathLength(i,:) = obj.patients(i).getBrainMatrix(matrixType).characteristicPathLength;                
+
             end
-            obj.FApatientsResults.shortestPathLengthMean = mean2(patientsShortestPath);
-            obj.FApatientsResults.shortestPathLengthSd = std2(patientsShortestPath);
             
-            obj.FApatientsResults.edgesInShortestPathMean = mean2(patientsEdgesInShortestPath);
-            obj.FApatientsResults.edgesInShortestPathSd = std2(patientsEdgesInShortestPath);
+            obj.getPatientsResults(matrixType).shortestPathLengthMean = mean2(patientsShortestPath);
+            obj.getPatientsResults(matrixType).shortestPathLengthSd   = std2(patientsShortestPath);
             
-            obj.FApatientsResults.characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
-            obj.FApatientsResults.characteristicPathLengthSd = std2(patientsCharacteristicPathLength);
+            obj.getPatientsResults(matrixType).edgesInShortestPathMean = mean2(patientsEdgesInShortestPath);
+            obj.getPatientsResults(matrixType).edgesInShortestPathSd   = std2(patientsEdgesInShortestPath);
             
+            obj.getPatientsResults(matrixType).characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
+            obj.getPatientsResults(matrixType).characteristicPathLengthSd   = std2(patientsCharacteristicPathLength);
+
             
             % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
+            for i = 1:length(obj.healthControls)                
+                healthControlsShortestPath(i,:)             = mean(obj.healthControls(i).getBrainMatrix(matrixType).shortestPathLength);                
+                healthControlsEdgesInShortestPath(i,:)      = mean(obj.healthControls(i).getBrainMatrix(matrixType).edgesInShortestPath);                
+                healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).characteristicPathLength;
                 
-                %The rows of this matrix corresponds to each patient in the
-                %group, and the columns, to the average path length of each
-                %node to the rest of the nodes
-                healthControlsShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.shortestPathLength);
-                
-                healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).FAMatrix.edgesInShortestPath);
-                
-                healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).FAMatrix.characteristicPathLength;
             end
-            obj.FAhealthControlsResults.shortestPathLengthMean = mean2(healthControlsShortestPath);
-            obj.FAhealthControlsResults.shortestPathLengthSd = std2(healthControlsShortestPath);
+            obj.getHealthControlsResults(matrixType).shortestPathLengthMean = mean2(healthControlsShortestPath);
+            obj.getHealthControlsResults(matrixType).shortestPathLengthSd   = std2(healthControlsShortestPath);
             
-            obj.FAhealthControlsResults.edgesInShortestPathMean = mean2(healthControlsEdgesInShortestPath);
-            obj.FAhealthControlsResults.edgesInShortestPathSd = std2(healthControlsEdgesInShortestPath);
+            obj.getHealthControlsResults(matrixType).edgesInShortestPathMean = mean2(healthControlsEdgesInShortestPath);
+            obj.getHealthControlsResults(matrixType).edgesInShortestPathSd   = std2(healthControlsEdgesInShortestPath);
             
-            obj.FAhealthControlsResults.characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
-            obj.FAhealthControlsResults.characteristicPathLengthSd = std2(healthControlsCharacteristicPathLength);
-            
+            obj.getHealthControlsResults(matrixType).characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
+            obj.getHealthControlsResults(matrixType).characteristicPathLengthSd   = std2(healthControlsCharacteristicPathLength);
+             
             % Perform the t-test
-            [obj.FApatientsResults.shortestPathLengthTtest, obj.FApatientsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
-            [obj.FAhealthControlsResults.shortestPathLengthTtest, obj.FAhealthControlsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
             
-            [obj.FApatientsResults.edgesInShortestPathTtest, obj.FApatientsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
-            [obj.FAhealthControlsResults.edgesInShortestPathTtest, obj.FAhealthControlsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
-
-            [obj.FApatientsResults.characteristicPathLengthTtest, obj.FApatientsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
-            [obj.FAhealthControlsResults.characteristicPathLengthTtest, obj.FAhealthControlsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            % Shortest Path
+            ms_mean_by_node = mean(patientsShortestPath);
+            hv_mean_by_node = mean(healthControlsShortestPath);        
             
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
+            
+            obj.getPatientsResults(matrixType).shortestPathLengthTtest  = h;
+            obj.getPatientsResults(matrixType).shortestPathLengthPvalue = p;   
+            
+            obj.getHealthControlsResults(matrixType).shortestPathLengthTtest  = h;
+            obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
+ 
+            % Number of edges in the shortest Path
+            ms_mean_by_node = mean(patientsEdgesInShortestPath);
+            hv_mean_by_node = mean(healthControlsEdgesInShortestPath);        
+            
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
+            
+            obj.getPatientsResults(matrixType).edgesInShortestPathTtest  = h;
+            obj.getPatientsResults(matrixType).edgesInShortestPathPvalue = p;   
+            
+            obj.getHealthControlsResults(matrixType).edgesInShortestPathTtest  = h;
+            obj.getHealthControlsResults(matrixType).edgesInShortestPathPvalue = p;
+  
+            % Characteristic path length           
+            [h, p] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
+            
+            obj.getPatientsResults(matrixType).characteristicPathLengthTtest  = h;
+            obj.getPatientsResults(matrixType).characteristicPathLengthPvalue = p;   
+            
+            obj.getHealthControlsResults(matrixType).characteristicPathLengthTtest  = h;
+            obj.getHealthControlsResults(matrixType).characteristicPathLengthPvalue = p;
         end
-        
-        %This function evaluates the shortest path lengths, the number of
-        %edges in the shortest paths and the characteristic path length of
-        %the network
-        function evaluateShortestPathSCMatrix(obj)
-            % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)
-                
-                %The rows of this matrix corresponds to each patient in the
-                %group, and the columns, to the average path length of each
-                %node to the rest of the nodes
-                patientsShortestPath(i,:) = mean(obj.patients(i).SCMatrix.shortestPathLength);
-                
-                patientsEdgesInShortestPath(i,:) = mean(obj.patients(i).SCMatrix.edgesInShortestPath);
-                
-                patientsCharacteristicPathLength(i,:) = obj.patients(i).SCMatrix.characteristicPathLength;                
-            end
-            obj.SCpatientsResults.shortestPathLengthMean = mean2(patientsShortestPath);
-            obj.SCpatientsResults.shortestPathLengthSd = std2(patientsShortestPath);
-            
-            obj.SCpatientsResults.edgesInShortestPathMean = mean2(patientsEdgesInShortestPath);
-            obj.SCpatientsResults.edgesInShortestPathSd = std2(patientsEdgesInShortestPath);
-            
-            obj.SCpatientsResults.characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
-            obj.SCpatientsResults.characteristicPathLengthSd = std2(patientsCharacteristicPathLength);
-            
-            
-            % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)
-                
-                %The rows of this matrix corresponds to each patient in the
-                %group, and the columns, to the average path length of each
-                %node to the rest of the nodes
-                healthControlsShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.shortestPathLength);
-                
-                healthControlsEdgesInShortestPath(i,:) = mean(obj.healthControls(i).SCMatrix.edgesInShortestPath);
-                
-                healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).SCMatrix.characteristicPathLength;
-            end
-            obj.SChealthControlsResults.shortestPathLengthMean = mean2(healthControlsShortestPath);
-            obj.SChealthControlsResults.shortestPathLengthSd = std2(healthControlsShortestPath);
-            
-            obj.SChealthControlsResults.edgesInShortestPathMean = mean2(healthControlsEdgesInShortestPath);
-            obj.SChealthControlsResults.edgesInShortestPathSd = std2(healthControlsEdgesInShortestPath);
-            
-            obj.SChealthControlsResults.characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
-            obj.SChealthControlsResults.characteristicPathLengthSd = std2(healthControlsCharacteristicPathLength);
-            
-            % Perform the t-test
-            [obj.SCpatientsResults.shortestPathLengthTtest, obj.SCpatientsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
-            [obj.SChealthControlsResults.shortestPathLengthTtest, obj.SChealthControlsResults.shortestPathLengthPvalue] = ttest2( mean(healthControlsShortestPath, 2), mean(patientsShortestPath,2));
-            
-            [obj.SCpatientsResults.edgesInShortestPathTtest, obj.SCpatientsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
-            [obj.SChealthControlsResults.edgesInShortestPathTtest, obj.SChealthControlsResults.edgesInShortestPathPvalue] = ttest2( mean(healthControlsEdgesInShortestPath, 2), mean(patientsEdgesInShortestPath,2));
-
-            [obj.SCpatientsResults.characteristicPathLengthTtest, obj.SCpatientsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
-            [obj.SChealthControlsResults.characteristicPathLengthTtest, obj.SChealthControlsResults.characteristicPathLengthPvalue] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
-            
-        end
-        
+             
         
         function patientsMatrixAnalysisResults = getPatientsResults (obj, matrixType)
             if strcmp(matrixType, 'FAMatrix') == true
