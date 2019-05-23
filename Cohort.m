@@ -10,6 +10,8 @@ classdef Cohort < handle
         
         SCpatientsResults
         SChealthControlsResults
+        
+        pValueLimit
     end
     
     methods
@@ -24,6 +26,8 @@ classdef Cohort < handle
             
             obj.SCpatientsResults       = MatrixAnalysisResults();
             obj.SChealthControlsResults = MatrixAnalysisResults();
+            
+            obj.pValueLimit = 0.01;
         end
         
         function loadCohortMembersFromFile(obj, descriptionFileName)
@@ -194,20 +198,20 @@ classdef Cohort < handle
         end
         
         function evaluateFAMatrix(obj)
-%             evaluateStrengths(obj, 'FAMatrix');
-%             evaluateDegrees(obj, 'FAMatrix');
-%             evaluateBetweenness(obj, 'FAMatrix');
-%             evaluateGlobalEfficiency(obj, 'FAMatrix');
-%             evaluateClusteringCoef(obj, 'FAMatrix');
+            evaluateStrengths(obj, 'FAMatrix');
+            evaluateDegrees(obj, 'FAMatrix');
+            evaluateBetweenness(obj, 'FAMatrix');
+            evaluateGlobalEfficiency(obj, 'FAMatrix');
+            evaluateClusteringCoef(obj, 'FAMatrix');
             evaluateShortestPath(obj, 'FAMatrix');
         end
         
         function evaluateSCMatrix(obj)
-%             evaluateStrengths(obj, 'SCMatrix');
-%             evaluateDegrees(obj, 'SCMatrix');
-%             evaluateBetweenness(obj, 'SCMatrix');
-%             evaluateGlobalEfficiency(obj, 'SCMatrix');
-%             evaluateClusteringCoef(obj, 'SCMatrix');
+            evaluateStrengths(obj, 'SCMatrix');
+            evaluateDegrees(obj, 'SCMatrix');
+            evaluateBetweenness(obj, 'SCMatrix');
+            evaluateGlobalEfficiency(obj, 'SCMatrix');
+            evaluateClusteringCoef(obj, 'SCMatrix');
             evaluateShortestPath(obj, 'SCMatrix');
         end
         
@@ -933,6 +937,12 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).strengthTtest  = h;
             obj.getHealthControlsResults(matrixType).strengthPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsValues, healthControlsValues);
+            else
+                disp('There is no significative difference in the mean values of both groups');
+            end
         end
         
 
@@ -965,6 +975,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).degreesTtest  = h;
             obj.getHealthControlsResults(matrixType).degreesPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsValues, healthControlsValues);
+            end
         end
         
         
@@ -997,6 +1011,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).betweennessTtest  = h;
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsValues, healthControlsValues);
+            end            
         end
         
         function evaluateGlobalEfficiency(obj, matrixType)
@@ -1027,7 +1045,7 @@ classdef Cohort < handle
             obj.getPatientsResults(matrixType).efficiencyGlobalPvalue       = p;   
             
             obj.getHealthControlsResults(matrixType).efficiencyGlobalTtest  = h;
-            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;                      
         end
         
         function evaluateClusteringCoef(obj, matrixType)
@@ -1059,6 +1077,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).clusteringCoefTtest  = h;
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsValues, healthControlsValues);
+            end            
         end
         
         function evaluateShortestPath(obj, matrixType)
@@ -1120,6 +1142,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).shortestPathLengthTtest  = h;
             obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsShortestPath, healthControlsShortestPath);
+            end            
  
             % Number of edges in the shortest Path
             ms_mean_by_node = mean(patientsEdgesInShortestPath);
@@ -1132,6 +1158,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).edgesInShortestPathTtest  = h;
             obj.getHealthControlsResults(matrixType).edgesInShortestPathPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+            end              
   
             % Characteristic path length           
             [h, p] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
@@ -1141,6 +1171,10 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).characteristicPathLengthTtest  = h;
             obj.getHealthControlsResults(matrixType).characteristicPathLengthPvalue = p;
+
+            if(p < obj.pValueLimit)
+                compareNodeByNode(patientsCharacteristicPathLength, healthControlsCharacteristicPathLength);
+            end                          
         end
              
         
@@ -1157,6 +1191,21 @@ classdef Cohort < handle
                 healthControlsMatrixAnalysisResults = obj.FAhealthControlsResults;
             elseif strcmp(matrixType, 'SCMatrix') == true
                 healthControlsMatrixAnalysisResults = obj.SChealthControlsResults;
+            end
+        end
+        
+        function [nodeIndex] = compareNodeByNode(~, patientsValueMatrix, hvValueMatrix)
+            nodeIndex = [];
+            for i = 1:size(patientsValueMatrix, 2)
+                [~, p] = ttest2( patientsValueMatrix(:, i), hvValueMatrix(:,i));
+                if p < 0.01
+                    nodeIndex = [nodeIndex i];
+                end                
+            end
+            if ~isempty(nodeIndex)
+                disp (['Los nodos con p<0.01 son: ', num2str(nodeIndex)]);
+            else
+                disp('There is no significative difference in the mean values of both groups');                
             end
         end
         
