@@ -9,6 +9,7 @@ classdef BrainMatrix < handle
         degrees
         betweenness
         efficiencyGlobal
+        efficiencyLocal
         clusteringCoef
         shortestPathLength
         edgesInShortestPath
@@ -30,6 +31,7 @@ classdef BrainMatrix < handle
             obj.degrees          = degrees_und(obj.matrix);
             obj.betweenness      = betweenness_wei(weight_conversion(obj.matrix, 'lengths'));
             obj.efficiencyGlobal = efficiency_wei(obj.matrix);
+            obj.efficiencyLocal  = efficiency_wei(obj.matrix,2);
             obj.clusteringCoef   = clustering_coef_wu(weight_conversion(obj.matrix, 'normalize'));
             [obj.shortestPathLength, obj.edgesInShortestPath]   = distance_wei(weight_conversion(obj.matrix, 'lengths'));
             obj.characteristicPathLength = mean2(obj.shortestPathLength); %The average shortest path length is the characteristic path length of the network
