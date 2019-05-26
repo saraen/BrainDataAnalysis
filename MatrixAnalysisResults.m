@@ -28,6 +28,12 @@ classdef MatrixAnalysisResults < handle
         efficiencyGlobalTtest  = 0
         efficiencyGlobalPvalue = 0
         
+        %Local efficiency
+        efficiencyLocalMean   = 0
+        efficiencyLocalSd     = 0
+        efficiencyLocalTtest  = 0
+        efficiencyLocalPvalue = 0
+        
         %Clustering coefficient
         clusteringCoefMean   = 0
         clusteringCoefSd     = 0
@@ -52,7 +58,9 @@ classdef MatrixAnalysisResults < handle
         characteristicPathLengthTtest  = 0
         characteristicPathLengthPvalue = 0
 
-        
+        % Matrix that contain the values that are significantly different
+        % in each group
+        significantValuesMatrix = []        
     end
     
     methods

@@ -140,6 +140,19 @@ classdef Cohort < handle
             
             disp('====================');
             
+            disp('LOCAL EFFICIENCY - FA MATRIX');
+            disp(['MS: ', num2str(obj.FApatientsResults.efficiencyLocalMean), ' (', num2str(obj.FApatientsResults.efficiencyLocalSd), ')']);
+            disp(['HV: ', num2str(obj.FAhealthControlsResults.efficiencyLocalMean), ' (', num2str(obj.FAhealthControlsResults.efficiencyLocalSd), ')']);
+            disp(['p-value: ', num2str(obj.FAhealthControlsResults.efficiencyLocalPvalue)]);
+            
+            disp('--------------------');
+            disp('LOCAL EFFICIENCY - SC MATRIX');
+            disp(['MS: ', num2str(obj.SCpatientsResults.efficiencyLocalMean), ' (', num2str(obj.SCpatientsResults.efficiencyLocalSd), ')']);
+            disp(['HV: ', num2str(obj.SChealthControlsResults.efficiencyLocalMean), ' (', num2str(obj.SChealthControlsResults.efficiencyLocalSd), ')']);
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.efficiencyLocalPvalue)]);          
+            
+            disp('====================');
+            
             disp('CLUSTERING COEFFICIENT - FA MATRIX');
             disp(['MS: ', num2str(obj.FApatientsResults.clusteringCoefMean), ' (', num2str(obj.FApatientsResults.clusteringCoefSd), ')']);
             disp(['HV: ', num2str(obj.FAhealthControlsResults.clusteringCoefMean), ' (', num2str(obj.FAhealthControlsResults.clusteringCoefSd), ')']);
@@ -202,6 +215,7 @@ classdef Cohort < handle
             evaluateDegrees(obj, 'FAMatrix');
             evaluateBetweenness(obj, 'FAMatrix');
             evaluateGlobalEfficiency(obj, 'FAMatrix');
+            evaluateLocalEfficiency(obj, 'FAMatrix');
             evaluateClusteringCoef(obj, 'FAMatrix');
             evaluateShortestPath(obj, 'FAMatrix');
         end
@@ -211,6 +225,7 @@ classdef Cohort < handle
             evaluateDegrees(obj, 'SCMatrix');
             evaluateBetweenness(obj, 'SCMatrix');
             evaluateGlobalEfficiency(obj, 'SCMatrix');
+            evaluateLocalEfficiency(obj, 'SCMatrix');
             evaluateClusteringCoef(obj, 'SCMatrix');
             evaluateShortestPath(obj, 'SCMatrix');
         end
@@ -939,9 +954,10 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).strengthPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsValues, healthControlsValues);
+                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
             else
-                disp('There is no significative difference in the mean values of both groups');
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
             end
         end
         
@@ -977,7 +993,10 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).degreesPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsValues, healthControlsValues);
+                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);               
             end
         end
         
@@ -1013,8 +1032,11 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsValues, healthControlsValues);
-            end            
+                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
+            end          
         end
         
         function evaluateGlobalEfficiency(obj, matrixType)
@@ -1045,8 +1067,53 @@ classdef Cohort < handle
             obj.getPatientsResults(matrixType).efficiencyGlobalPvalue       = p;   
             
             obj.getHealthControlsResults(matrixType).efficiencyGlobalTtest  = h;
-            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;                      
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;    
+            
+            if(p < obj.pValueLimit)
+                obj.addSignificantValues(matrixType, 1, patientsValues, healthControlsValues);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Global Efficiency in both groups']);
+            end
         end
+        
+        function evaluateLocalEfficiency(obj, matrixType)
+            patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
+            healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
+            
+            % First evaluate the PATIENTS group
+            for i = 1:length(obj.patients)
+                patientsValues(i,:) = obj.patients(i).getBrainMatrix(matrixType).efficiencyLocal;
+            end
+            obj.getPatientsResults(matrixType).efficiencyLocalMean = mean2(patientsValues);
+            obj.getPatientsResults(matrixType).efficiencyLocalSd   = std2(patientsValues);
+            
+            % Then evaluate the HEALTH CONTROLS group
+            for i = 1:length(obj.healthControls)
+                healthControlsValues(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).efficiencyLocal;
+            end
+            obj.getHealthControlsResults(matrixType).efficiencyLocalMean = mean2(healthControlsValues);
+            obj.getHealthControlsResults(matrixType).efficiencyLocalSd   = std2(healthControlsValues);
+            
+            ms_mean_by_node = mean(patientsValues);
+            hv_mean_by_node = mean(healthControlsValues);
+            
+            % Perform the t-test
+            [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
+            
+            obj.getPatientsResults(matrixType).efficiencyLocalTtest        = h;
+            obj.getPatientsResults(matrixType).efficiencyLocalPvalue       = p;   
+            
+            obj.getHealthControlsResults(matrixType).efficiencyLocalTtest  = h;
+            obj.getHealthControlsResults(matrixType).efficiencyLocalPvalue = p;
+            
+            if(p < obj.pValueLimit)
+                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
+            end          
+        end
+        
         
         function evaluateClusteringCoef(obj, matrixType)
             patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
@@ -1079,8 +1146,11 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsValues, healthControlsValues);
-            end            
+                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
+            end          
         end
         
         function evaluateShortestPath(obj, matrixType)
@@ -1144,8 +1214,11 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsShortestPath, healthControlsShortestPath);
-            end            
+                nodeIndex = obj.compareNodeByNode(patientsShortestPath, healthControlsShortestPath);        
+                obj.addSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
+            end          
  
             % Number of edges in the shortest Path
             ms_mean_by_node = mean(patientsEdgesInShortestPath);
@@ -1160,7 +1233,10 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).edgesInShortestPathPvalue = p;
             
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+                nodeIndex = obj.compareNodeByNode(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+                obj.addSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
             end              
   
             % Characteristic path length           
@@ -1173,8 +1249,10 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).characteristicPathLengthPvalue = p;
 
             if(p < obj.pValueLimit)
-                compareNodeByNode(patientsCharacteristicPathLength, healthControlsCharacteristicPathLength);
-            end                          
+                obj.addSignificantValues(matrixType, 1, patientsCharacteristicPathLength, healthControlsCharacteristicPathLength);
+            else
+                disp(['There is no significative difference in the mean values of the ', matrixType, ' characteristic path length in both groups']);
+            end
         end
              
         
@@ -1205,9 +1283,25 @@ classdef Cohort < handle
             if ~isempty(nodeIndex)
                 disp (['Los nodos con p<0.01 son: ', num2str(nodeIndex)]);
             else
-                disp('There is no significative difference in the mean values of both groups');                
+                disp('There is no significative difference in the mean values of both groups');
             end
         end
+        
+        %Add the correspondent significant values to the matrix
+        function addSignificantValues(obj, matrixType, nodeIndex, patientsValues, hvValues)
+            if ~isempty(nodeIndex)
+                
+                oldPatientsValues = obj.getPatientsResults(matrixType).significantValuesMatrix;
+                newPatientsValues = [oldPatientsValues patientsValues(:, nodeIndex)];
+                obj.getPatientsResults(matrixType).significantValuesMatrix = newPatientsValues;
+                
+                oldHvValues = obj.getHealthControlsResults(matrixType).significantValuesMatrix;
+                newHvValues = [oldHvValues hvValues(:, nodeIndex)];
+                obj.getHealthControlsResults(matrixType).significantValuesMatrix = newHvValues;
+            end
+        end
+        
+
         
     end
     
