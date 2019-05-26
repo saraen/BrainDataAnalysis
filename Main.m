@@ -8,4 +8,4 @@ brainMatrixCohort.showAnalysisResults();
 brainMatrixCohort.showPlots();
 
 featuresMatrix  = getFeaturesMatrix(brainMatrixCohort);
-saveDataToCsv(featuresMatrix, 0, 'pruebaCsv');
+saveDataToCsv(featuresMatrix, 0, 'BrainMatrixData');

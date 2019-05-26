@@ -15,7 +15,7 @@ function saveDataToCsv( featuresMatrix, hasHeaders, fileName)
 
 % Create column names if the featuresMatrix doesn't have
 if( hasHeaders == 0 )
-    columnNames = cell(1, size(healthControlsValues, 2));
+    columnNames = cell(1, size(featuresMatrix, 2));
     for i = 1: length(columnNames)
         columnNames{i} = ['Column', num2str(i)];
     end
