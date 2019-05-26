@@ -1301,7 +1301,36 @@ classdef Cohort < handle
             end
         end
         
-
+        function [featuresMatrix]  = getFeaturesMatrix(obj)
+            
+            %PATIENTS
+            %First, concatenate the significant values from FA and SC
+            faPatientsValues = obj.getPatientsResults('FAMatrix').significantValuesMatrix;
+            scPatientsValues = obj.getPatientsResults('SCMatrix').significantValuesMatrix;
+            patientsValues = [faPatientsValues scPatientsValues];
+            
+            %Then add a column to specify the class to which each row
+            %belongs - in this case ms
+            classes = cell(size(patientsValues, 1), 1);
+            classes(:) = {'ms'};
+            patientsValues = [num2cell(patientsValues) classes];
+            
+            %HEALTHY VOLUNTEERS
+            %First, concatenate the significant values from FA and SC
+            faHvValues = obj.getHealthControlsResults('FAMatrix').significantValuesMatrix;
+            scHvValues = obj.getHealthControlsResults('SCMatrix').significantValuesMatrix;
+            healthControlsValues = [faHvValues scHvValues];
+            
+            %Then add a column to specify the class to which each row
+            %belongs - in this case hv
+            classes = cell(size(healthControlsValues, 1), 1);
+            classes(:) = {'hv'};
+            healthControlsValues = [num2cell(healthControlsValues) classes];
+            
+            %Finally, store both groups in the same matrix
+            featuresMatrix = [patientsValues; healthControlsValues];
+            
+        end
         
     end
     
