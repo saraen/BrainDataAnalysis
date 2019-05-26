@@ -953,12 +953,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).strengthTtest  = h;
             obj.getHealthControlsResults(matrixType).strengthPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
-            end
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
+%             end
         end
         
 
@@ -992,12 +992,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).degreesTtest  = h;
             obj.getHealthControlsResults(matrixType).degreesPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);               
-            end
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);               
+%             end
         end
         
         
@@ -1031,12 +1031,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).betweennessTtest  = h;
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
-            end          
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
+%             end          
         end
         
         function evaluateGlobalEfficiency(obj, matrixType)
@@ -1106,12 +1106,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).efficiencyLocalTtest  = h;
             obj.getHealthControlsResults(matrixType).efficiencyLocalPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
-            end          
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
+%             end          
         end
         
         
@@ -1145,12 +1145,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).clusteringCoefTtest  = h;
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsValues, healthControlsValues);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
-            end          
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
+%             end          
         end
         
         function evaluateShortestPath(obj, matrixType)
@@ -1213,12 +1213,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).shortestPathLengthTtest  = h;
             obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsShortestPath, healthControlsShortestPath);        
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsShortestPath, healthControlsShortestPath);        
                 obj.addSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
-            end          
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
+%             end          
  
             % Number of edges in the shortest Path
             ms_mean_by_node = mean(patientsEdgesInShortestPath);
@@ -1232,12 +1232,12 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).edgesInShortestPathTtest  = h;
             obj.getHealthControlsResults(matrixType).edgesInShortestPathPvalue = p;
             
-            if(p < obj.pValueLimit)
-                nodeIndex = obj.compareNodeByNode(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+%             if(p < obj.pValueLimit)
+                nodeIndex = obj.getSignificantNodesIndex(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
                 obj.addSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
-            else
-                disp(['There is no significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
-            end              
+%             else
+%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
+%             end              
   
             % Characteristic path length           
             [h, p] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
@@ -1272,13 +1272,13 @@ classdef Cohort < handle
             end
         end
         
-        function [nodeIndex] = compareNodeByNode(~, patientsValueMatrix, hvValueMatrix)
+        function [nodeIndex] = getSignificantNodesIndex(obj, patientsValueMatrix, hvValueMatrix)
             nodeIndex = [];
-            for i = 1:size(patientsValueMatrix, 2)
-                [~, p] = ttest2( patientsValueMatrix(:, i), hvValueMatrix(:,i));
-                if p < 0.01
+            [~, p] = ttest2( patientsValueMatrix, hvValueMatrix);
+            for i = 1:length(p)
+                if p(i) < obj.pValueLimit
                     nodeIndex = [nodeIndex i];
-                end                
+                end
             end
             if ~isempty(nodeIndex)
                 disp (['Los nodos con p<0.01 son: ', num2str(nodeIndex)]);
