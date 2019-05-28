@@ -7,5 +7,8 @@ brainMatrixCohort.evaluateCohort();
 brainMatrixCohort.showAnalysisResults();
 % brainMatrixCohort.showPlots();
 
-featuresMatrix  = getFeaturesMatrix(brainMatrixCohort);
-saveDataToCsv(featuresMatrix, 0, 'BrainMatrixData');
+featuresMatrixFA  = getFeaturesMatrix(brainMatrixCohort, 'FAMatrix');
+featuresMatrixSC  = getFeaturesMatrix(brainMatrixCohort, 'SCMatrix');
+
+saveDataToCsv(featuresMatrixFA, 0, 'FAMatrixSignificantData');
+saveDataToCsv(featuresMatrixSC, 0, 'SCMatrixSignificantData');

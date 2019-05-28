@@ -954,7 +954,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).strengthPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);  
+                disp('--------------');
+                disp(['STRENGTHS-', matrixType]);
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
@@ -993,7 +995,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).degreesPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);    
+                disp('--------------');
+                disp(['DEGREES-', matrixType]);
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);               
@@ -1032,7 +1036,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);   
+                disp('--------------');
+                disp(['BETWEENNESS-', matrixType]);                
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
@@ -1107,7 +1113,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).efficiencyLocalPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);   
+                disp('--------------');
+                disp(['LOCAL EFFICIENCY-', matrixType]);                
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
@@ -1146,7 +1154,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues); 
+                disp('--------------');
+                disp(['CLUSTERING COEFFICIENT-', matrixType]);
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
@@ -1214,7 +1224,9 @@ classdef Cohort < handle
             obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
             
 %             if(p < obj.pValueLimit)
-                nodeIndex = obj.getSignificantNodesIndex(patientsShortestPath, healthControlsShortestPath);        
+                nodeIndex = obj.getSignificantNodesIndex(patientsShortestPath, healthControlsShortestPath); 
+                disp('--------------');
+                disp(['SHORTEST PATH-', matrixType]);                
                 obj.addSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
@@ -1234,6 +1246,8 @@ classdef Cohort < handle
             
 %             if(p < obj.pValueLimit)
                 nodeIndex = obj.getSignificantNodesIndex(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+                disp('--------------');
+                disp(['NUMBER OF EDGES IN SHORTEST PATH-', matrixType]);                
                 obj.addSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
 %             else
 %                 disp(['There is no significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
@@ -1301,7 +1315,9 @@ classdef Cohort < handle
             end
         end
         
-        function [featuresMatrix]  = getFeaturesMatrix(obj)
+        % This function returns the common features matrix concatenating
+        % the significant values from SC and FA matrixes
+        function [featuresMatrix]  = getFeaturesMatrixCommon(obj)
             
             %PATIENTS
             %First, concatenate the significant values from FA and SC
@@ -1321,6 +1337,33 @@ classdef Cohort < handle
             scHvValues = obj.getHealthControlsResults('SCMatrix').significantValuesMatrix;
             healthControlsValues = [faHvValues scHvValues];
             
+            %Then add a column to specify the class to which each row
+            %belongs - in this case hv
+            classes = cell(size(healthControlsValues, 1), 1);
+            classes(:) = {'hv'};
+            healthControlsValues = [num2cell(healthControlsValues) classes];
+            
+            %Finally, store both groups in the same matrix
+            featuresMatrix = [patientsValues; healthControlsValues];
+            
+        end
+        
+        function [featuresMatrix]  = getFeaturesMatrix(obj, matrixType)
+            
+            %PATIENTS
+            %First get the significant values of the nodes
+            patientsValues = obj.getPatientsResults(matrixType).significantValuesMatrix;
+                        
+            %Then add a column to specify the class to which each row
+            %belongs - in this case ms
+            classes = cell(size(patientsValues, 1), 1);
+            classes(:) = {'ms'};
+            patientsValues = [num2cell(patientsValues) classes];
+            
+            %HEALTHY VOLUNTEERS
+            %First get the significant values of the nodes
+            healthControlsValues = obj.getHealthControlsResults(matrixType).significantValuesMatrix;
+                        
             %Then add a column to specify the class to which each row
             %belongs - in this case hv
             classes = cell(size(healthControlsValues, 1), 1);
