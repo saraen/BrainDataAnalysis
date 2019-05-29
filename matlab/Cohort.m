@@ -151,7 +151,7 @@ classdef Cohort < handle
             disp('LOCAL EFFICIENCY - SC MATRIX');
             disp(['MS: ', num2str(obj.SCpatientsResults.efficiencyLocalMean), ' (', num2str(obj.SCpatientsResults.efficiencyLocalSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.efficiencyLocalMean), ' (', num2str(obj.SChealthControlsResults.efficiencyLocalSd), ')']);
-            disp(['p-value: ', num2str(obj.SChealthControlsResults.efficiencyLocalPvalue)]);          
+            disp(['p-value: ', num2str(obj.SChealthControlsResults.efficiencyLocalPvalue)]);
             
             disp('====================');
             
@@ -165,7 +165,7 @@ classdef Cohort < handle
             disp(['MS: ', num2str(obj.SCpatientsResults.clusteringCoefMean), ' (', num2str(obj.SCpatientsResults.clusteringCoefSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.clusteringCoefMean), ' (', num2str(obj.SChealthControlsResults.clusteringCoefSd), ')']);
             disp(['p-value: ', num2str(obj.SChealthControlsResults.clusteringCoefPvalue)]);
-
+            
             disp('====================');
             
             disp('SHORTEST PATH LENGTH - FA MATRIX');
@@ -204,7 +204,7 @@ classdef Cohort < handle
             disp(['MS: ', num2str(obj.SCpatientsResults.characteristicPathLengthMean), ' (', num2str(obj.SCpatientsResults.characteristicPathLengthSd), ')']);
             disp(['HV: ', num2str(obj.SChealthControlsResults.characteristicPathLengthMean), ' (', num2str(obj.SChealthControlsResults.characteristicPathLengthSd), ')']);
             disp(['p-value: ', num2str(obj.SChealthControlsResults.characteristicPathLengthPvalue)]);
-
+            
         end
         
         function evaluateCohort(obj)
@@ -255,13 +255,13 @@ classdef Cohort < handle
             %Global efficiency
             globalEfficiencyBoxPlot(obj, 'FAMatrix');
             globalEfficiencyBoxPlot(obj, 'SCMatrix');
-
+            
             %Clustering coefficient
             clusteringCoefLinePlot(obj, 'FAMatrix');
             clusteringCoefLinePlot(obj, 'SCMatrix');
             clusteringCoefBoxPlot(obj, 'FAMatrix');
             clusteringCoefBoxPlot(obj, 'SCMatrix');
-
+            
             %Shortest Path Length
             shortestPathLinePlot(obj, 'FAMatrix');
             shortestPathLinePlot(obj, 'SCMatrix');
@@ -277,7 +277,7 @@ classdef Cohort < handle
             %Characteristic path length
             characteristicPathLengthBoxPlot(obj, 'FAMatrix');
             characteristicPathLengthBoxPlot(obj, 'SCMatrix');
-
+            
             
         end
         
@@ -289,7 +289,7 @@ classdef Cohort < handle
         %
         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         
         % This function shows a line plot of the mean values of the
         % strengths of each node for each population
@@ -574,7 +574,7 @@ classdef Cohort < handle
             title(plotTitle)
         end
         
-                
+        
         % This function plots the global efficiency boxplot of both
         % groups
         %
@@ -588,7 +588,7 @@ classdef Cohort < handle
                 for i = 1:length(obj.healthControls)
                     healthControlsEfficiency(i,:) = obj.healthControls(i).FAMatrix.efficiencyGlobal;
                 end
-                             
+                
                 plotTitle = 'Global efficiency-FA Matrix';
                 
             elseif strcmp(matrixType, 'SCMatrix')
@@ -602,10 +602,10 @@ classdef Cohort < handle
                 plotTitle = 'Global efficiency-SC Matrix';
                 
             end
-                        
+            
             %Plot the values
             group = [    ones(size(healthControlsEfficiency));
-                     2 * ones(size(patientsEfficiency))];
+                2 * ones(size(patientsEfficiency))];
             figure
             boxplot([healthControlsEfficiency; patientsEfficiency],group, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)
@@ -818,7 +818,7 @@ classdef Cohort < handle
                 
             end
             
-
+            
             ms_mean_by_node = mean(patientsEdgesInShortestPath);
             hv_mean_by_node = mean(healthControlsEdgesInShortestPath);
             
@@ -877,7 +877,7 @@ classdef Cohort < handle
             figure
             boxplot(X, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)
-        end        
+        end
         
         
         % This function plots the characteristic path length boxplot of both
@@ -893,7 +893,7 @@ classdef Cohort < handle
                 for i = 1:length(obj.healthControls)
                     healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).FAMatrix.characteristicPathLength;
                 end
-                             
+                
                 plotTitle = 'Characteristic Path Length-FA Matrix';
                 
             elseif strcmp(matrixType, 'SCMatrix')
@@ -907,16 +907,16 @@ classdef Cohort < handle
                 plotTitle = 'Characteristic Path Length-SC Matrix';
                 
             end
-                        
+            
             %Plot the values
             group = [    ones(size(healthControlsCharacteristicPathLength));
-                     2 * ones(size(patientsCharacteristicPathLength))];
+                2 * ones(size(patientsCharacteristicPathLength))];
             figure
             boxplot([healthControlsCharacteristicPathLength; patientsCharacteristicPathLength],group, 'Color', 'k', 'Labels',{'HV','MS'})
             title(plotTitle)
         end
-
-
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %
         %
@@ -950,23 +950,30 @@ classdef Cohort < handle
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).strengthTtest        = h;
-            obj.getPatientsResults(matrixType).strengthPvalue       = p;   
+            obj.getPatientsResults(matrixType).strengthPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).strengthTtest  = h;
             obj.getHealthControlsResults(matrixType).strengthPvalue = p;
             
-%             if(p < obj.pValueLimit)
-                disp('--------------');
-                disp(['STRENGTHS-', matrixType]);
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);                  
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['STRENGTHS-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                % If not, add it to the node by node comparison significant
+                % nodes
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
                 obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Strength in both groups']);
-%             end
+            end
         end
         
-
-        function evaluateDegrees(obj, matrixType)       
+        
+        function evaluateDegrees(obj, matrixType)
             patientsValues       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
             healthControlsValues = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             
@@ -991,19 +998,26 @@ classdef Cohort < handle
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).degreesTtest        = h;
-            obj.getPatientsResults(matrixType).degreesPvalue       = p;   
+            obj.getPatientsResults(matrixType).degreesPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).degreesTtest  = h;
             obj.getHealthControlsResults(matrixType).degreesPvalue = p;
             
-%             if(p < obj.pValueLimit)
-                disp('--------------');
-                disp(['DEGREES-', matrixType]);
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);                    
-                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);               
-%             end
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['DEGREES-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Degrees in both groups']);                
+            end
+            
         end
         
         
@@ -1032,19 +1046,26 @@ classdef Cohort < handle
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).betweennessTtest        = h;
-            obj.getPatientsResults(matrixType).betweennessPvalue       = p;   
+            obj.getPatientsResults(matrixType).betweennessPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).betweennessTtest  = h;
             obj.getHealthControlsResults(matrixType).betweennessPvalue = p;
             
-%             if(p < obj.pValueLimit)                
-                disp('--------------');
-                disp(['BETWEENNESS-', matrixType]);      
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);   
-                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
-%             end          
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['BETWEENNESS-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);            
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else                
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Betweenness in both groups']);
+            end
+            
         end
         
         function evaluateGlobalEfficiency(obj, matrixType)
@@ -1067,18 +1088,20 @@ classdef Cohort < handle
             end
             obj.getHealthControlsResults(matrixType).efficiencyGlobalMean = mean2(healthControlsValues);
             obj.getHealthControlsResults(matrixType).efficiencyGlobalSd   = std2(healthControlsValues);
-                        
+            
             % Perform the t-test
             [h, p] = ttest2( healthControlsValues, patientsValues);
             
             obj.getPatientsResults(matrixType).efficiencyGlobalTtest        = h;
-            obj.getPatientsResults(matrixType).efficiencyGlobalPvalue       = p;   
+            obj.getPatientsResults(matrixType).efficiencyGlobalPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).efficiencyGlobalTtest  = h;
-            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;    
+            obj.getHealthControlsResults(matrixType).efficiencyGlobalPvalue = p;
             
             if(p < obj.pValueLimit)
+                %If p is significative, add the values to both significant matrix
                 obj.addSignificantValues(matrixType, 1, patientsValues, healthControlsValues);
+                obj.addGlobalSignificantValues(matrixType, 1, patientsValues, healthControlsValues);
             else
                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Global Efficiency in both groups']);
             end
@@ -1109,19 +1132,25 @@ classdef Cohort < handle
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).efficiencyLocalTtest        = h;
-            obj.getPatientsResults(matrixType).efficiencyLocalPvalue       = p;   
+            obj.getPatientsResults(matrixType).efficiencyLocalPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).efficiencyLocalTtest  = h;
             obj.getHealthControlsResults(matrixType).efficiencyLocalPvalue = p;
             
-%             if(p < obj.pValueLimit)                
-                disp('--------------');
-                disp(['LOCAL EFFICIENCY-', matrixType]);            
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);   
-                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
-%             end          
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['LOCAL EFFICIENCY-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);            
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Local Efficiency in both groups']);
+            end
         end
         
         
@@ -1150,39 +1179,45 @@ classdef Cohort < handle
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).clusteringCoefTtest        = h;
-            obj.getPatientsResults(matrixType).clusteringCoefPvalue       = p;   
+            obj.getPatientsResults(matrixType).clusteringCoefPvalue       = p;
             
             obj.getHealthControlsResults(matrixType).clusteringCoefTtest  = h;
             obj.getHealthControlsResults(matrixType).clusteringCoefPvalue = p;
             
-%             if(p < obj.pValueLimit)                
-                disp('--------------');
-                disp(['CLUSTERING COEFFICIENT-', matrixType]);
-                nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues); 
-                obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
-%             end          
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['CLUSTERING COEFFICIENT-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsValues, healthControlsValues);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);            
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsValues, healthControlsValues);
+            else
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Clustering coefficient in both groups']);
+            end
         end
         
         function evaluateShortestPath(obj, matrixType)
             patientsShortestPath              = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
             patientsEdgesInShortestPath       = zeros(length(obj.patients), size(obj.patients(1).getBrainMatrix(matrixType).matrix, 2));
             patientsCharacteristicPathLength  = zeros(length(obj.patients), 1);
-
+            
             healthControlsShortestPath              = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             healthControlsEdgesInShortestPath       = zeros(length(obj.healthControls), size(obj.healthControls(1).getBrainMatrix(matrixType).matrix, 2));
             healthControlsCharacteristicPathLength  = zeros(length(obj.healthControls), 1);
-                        
+            
             % First evaluate the PATIENTS group
-            for i = 1:length(obj.patients)                
+            for i = 1:length(obj.patients)
                 %The rows of this matrix corresponds to each patient in the
                 %group, and the columns, to the average path length of each
                 %node to the rest of the nodes
-                patientsShortestPath(i,:)             = mean(obj.patients(i).getBrainMatrix(matrixType).shortestPathLength);                
-                patientsEdgesInShortestPath(i,:)      = mean(obj.patients(i).getBrainMatrix(matrixType).edgesInShortestPath);                
-                patientsCharacteristicPathLength(i,:) = obj.patients(i).getBrainMatrix(matrixType).characteristicPathLength;                
-
+                patientsShortestPath(i,:)             = mean(obj.patients(i).getBrainMatrix(matrixType).shortestPathLength);
+                patientsEdgesInShortestPath(i,:)      = mean(obj.patients(i).getBrainMatrix(matrixType).edgesInShortestPath);
+                patientsCharacteristicPathLength(i,:) = obj.patients(i).getBrainMatrix(matrixType).characteristicPathLength;
+                
             end
             
             obj.getPatientsResults(matrixType).shortestPathLengthMean = mean2(patientsShortestPath);
@@ -1193,12 +1228,12 @@ classdef Cohort < handle
             
             obj.getPatientsResults(matrixType).characteristicPathLengthMean = mean2(patientsCharacteristicPathLength);
             obj.getPatientsResults(matrixType).characteristicPathLengthSd   = std2(patientsCharacteristicPathLength);
-
+            
             
             % Then evaluate the HEALTH CONTROLS group
-            for i = 1:length(obj.healthControls)                
-                healthControlsShortestPath(i,:)             = mean(obj.healthControls(i).getBrainMatrix(matrixType).shortestPathLength);                
-                healthControlsEdgesInShortestPath(i,:)      = mean(obj.healthControls(i).getBrainMatrix(matrixType).edgesInShortestPath);                
+            for i = 1:length(obj.healthControls)
+                healthControlsShortestPath(i,:)             = mean(obj.healthControls(i).getBrainMatrix(matrixType).shortestPathLength);
+                healthControlsEdgesInShortestPath(i,:)      = mean(obj.healthControls(i).getBrainMatrix(matrixType).edgesInShortestPath);
                 healthControlsCharacteristicPathLength(i,:) = obj.healthControls(i).getBrainMatrix(matrixType).characteristicPathLength;
                 
             end
@@ -1210,67 +1245,83 @@ classdef Cohort < handle
             
             obj.getHealthControlsResults(matrixType).characteristicPathLengthMean = mean2(healthControlsCharacteristicPathLength);
             obj.getHealthControlsResults(matrixType).characteristicPathLengthSd   = std2(healthControlsCharacteristicPathLength);
-             
+            
             % Perform the t-test
             
             % Shortest Path
             ms_mean_by_node = mean(patientsShortestPath);
-            hv_mean_by_node = mean(healthControlsShortestPath);        
+            hv_mean_by_node = mean(healthControlsShortestPath);
             
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).shortestPathLengthTtest  = h;
-            obj.getPatientsResults(matrixType).shortestPathLengthPvalue = p;   
+            obj.getPatientsResults(matrixType).shortestPathLengthPvalue = p;
             
             obj.getHealthControlsResults(matrixType).shortestPathLengthTtest  = h;
             obj.getHealthControlsResults(matrixType).shortestPathLengthPvalue = p;
             
-%             if(p < obj.pValueLimit)                
-                disp('--------------');
-                disp(['SHORTEST PATH-', matrixType]);   
-                nodeIndex = obj.getSignificantNodesIndex(patientsShortestPath, healthControlsShortestPath); 
-                obj.addSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
-%             end          
- 
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['SHORTEST PATH-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsShortestPath, healthControlsShortestPath);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);            
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsShortestPath, healthControlsShortestPath);
+            else
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' Shortest path in both groups']);
+            end
+            
+            
             % Number of edges in the shortest Path
             ms_mean_by_node = mean(patientsEdgesInShortestPath);
-            hv_mean_by_node = mean(healthControlsEdgesInShortestPath);        
+            hv_mean_by_node = mean(healthControlsEdgesInShortestPath);
             
             [h, p] = ttest2( hv_mean_by_node, ms_mean_by_node);
             
             obj.getPatientsResults(matrixType).edgesInShortestPathTtest  = h;
-            obj.getPatientsResults(matrixType).edgesInShortestPathPvalue = p;   
+            obj.getPatientsResults(matrixType).edgesInShortestPathPvalue = p;
             
             obj.getHealthControlsResults(matrixType).edgesInShortestPathTtest  = h;
             obj.getHealthControlsResults(matrixType).edgesInShortestPathPvalue = p;
             
-%             if(p < obj.pValueLimit)
-                disp('--------------');
-                disp(['NUMBER OF EDGES IN SHORTEST PATH-', matrixType]);      
-                nodeIndex = obj.getSignificantNodesIndex(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);          
-                obj.addSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
-%             else
-%                 disp(['There is no significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
-%             end              
-  
-            % Characteristic path length           
+            % SIGNIFICANT VALUES
+            disp('--------------');
+            disp(['NUMBER OF EDGES IN SHORTEST PATH-', matrixType]);
+            nodeIndex = obj.getSignificantNodesIndex(patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+            % Add them to the node by node comparison significant nodes
+            obj.addSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);                        
+            
+            if(p < obj.pValueLimit)
+                % If the gloabl p is significant, add the nodes to the global
+                % significant values matrix
+                obj.addGlobalSignificantValues(matrixType, nodeIndex, patientsEdgesInShortestPath, healthControlsEdgesInShortestPath);
+            else
+                disp(['There is no global significative difference in the mean values of the ', matrixType, ' number of edges in the shortest path in both groups']);
+            end
+            
+            
+            % Characteristic path length
             [h, p] = ttest2( healthControlsCharacteristicPathLength, patientsCharacteristicPathLength);
             
             obj.getPatientsResults(matrixType).characteristicPathLengthTtest  = h;
-            obj.getPatientsResults(matrixType).characteristicPathLengthPvalue = p;   
+            obj.getPatientsResults(matrixType).characteristicPathLengthPvalue = p;
             
             obj.getHealthControlsResults(matrixType).characteristicPathLengthTtest  = h;
             obj.getHealthControlsResults(matrixType).characteristicPathLengthPvalue = p;
-
+            
             if(p < obj.pValueLimit)
+                %If p is significative, add the values to both significant matrix
                 obj.addSignificantValues(matrixType, 1, patientsCharacteristicPathLength, healthControlsCharacteristicPathLength);
+                obj.addGlobalSignificantValues(matrixType, 1, patientsCharacteristicPathLength, healthControlsCharacteristicPathLength);
             else
                 disp(['There is no significative difference in the mean values of the ', matrixType, ' characteristic path length in both groups']);
             end
         end
-             
+        
         
         function patientsMatrixAnalysisResults = getPatientsResults (obj, matrixType)
             if strcmp(matrixType, 'FAMatrix') == true
@@ -1317,6 +1368,21 @@ classdef Cohort < handle
             end
         end
         
+        
+        %Add the correspondent significant values to the matrix
+        function addGlobalSignificantValues(obj, matrixType, nodeIndex, patientsValues, hvValues)
+            if ~isempty(nodeIndex)
+                
+                oldPatientsValues = obj.getPatientsResults(matrixType).globalSignificantValuesMatrix;
+                newPatientsValues = [oldPatientsValues patientsValues(:, nodeIndex)];
+                obj.getPatientsResults(matrixType).globalSignificantValuesMatrix = newPatientsValues;
+                
+                oldHvValues = obj.getHealthControlsResults(matrixType).globalSignificantValuesMatrix;
+                newHvValues = [oldHvValues hvValues(:, nodeIndex)];
+                obj.getHealthControlsResults(matrixType).globalSignificantValuesMatrix = newHvValues;
+            end
+        end
+        
         % This function returns the common features matrix concatenating
         % the significant values from SC and FA matrixes
         function [featuresMatrix]  = getFeaturesMatrixCommon(obj)
@@ -1355,7 +1421,7 @@ classdef Cohort < handle
             %PATIENTS
             %First get the significant values of the nodes
             patientsValues = obj.getPatientsResults(matrixType).significantValuesMatrix;
-                        
+            
             %Then add a column to specify the class to which each row
             %belongs - in this case ms
             classes = cell(size(patientsValues, 1), 1);
@@ -1365,7 +1431,34 @@ classdef Cohort < handle
             %HEALTHY VOLUNTEERS
             %First get the significant values of the nodes
             healthControlsValues = obj.getHealthControlsResults(matrixType).significantValuesMatrix;
-                        
+            
+            %Then add a column to specify the class to which each row
+            %belongs - in this case hv
+            classes = cell(size(healthControlsValues, 1), 1);
+            classes(:) = {'hv'};
+            healthControlsValues = [num2cell(healthControlsValues) classes];
+            
+            %Finally, store both groups in the same matrix
+            featuresMatrix = [patientsValues; healthControlsValues];
+            
+        end
+        
+        function [featuresMatrix]  = getGlobalSignificantFeaturesMatrix(obj, matrixType)
+            
+            %PATIENTS
+            %First get the significant values of the nodes
+            patientsValues = obj.getPatientsResults(matrixType).globalSignificantValuesMatrix;
+            
+            %Then add a column to specify the class to which each row
+            %belongs - in this case ms
+            classes = cell(size(patientsValues, 1), 1);
+            classes(:) = {'ms'};
+            patientsValues = [num2cell(patientsValues) classes];
+            
+            %HEALTHY VOLUNTEERS
+            %First get the significant values of the nodes
+            healthControlsValues = obj.getHealthControlsResults(matrixType).globalSignificantValuesMatrix;
+            
             %Then add a column to specify the class to which each row
             %belongs - in this case hv
             classes = cell(size(healthControlsValues, 1), 1);

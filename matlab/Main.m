@@ -12,3 +12,9 @@ featuresMatrixSC  = getFeaturesMatrix(brainMatrixCohort, 'SCMatrix');
 
 saveDataToCsv(featuresMatrixFA, 0, 'FAMatrixSignificantData');
 saveDataToCsv(featuresMatrixSC, 0, 'SCMatrixSignificantData');
+
+globalfeaturesMatrixFA = getGlobalSignificantFeaturesMatrix(brainMatrixCohort, 'FAMatrix');
+globalfeaturesMatrixSC = getGlobalSignificantFeaturesMatrix(brainMatrixCohort, 'SCMatrix');
+
+saveDataToCsv(globalfeaturesMatrixFA, 0, 'globalFAMatrixSignificantData');
+saveDataToCsv(globalfeaturesMatrixSC, 0, 'globalSCMatrixSignificantData');

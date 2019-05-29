@@ -59,8 +59,13 @@ classdef MatrixAnalysisResults < handle
         characteristicPathLengthPvalue = 0
 
         % Matrix that contain the values that are significantly different
-        % in each group
+        % in each group, comparing node by node
         significantValuesMatrix = []        
+        
+        % Matrix that contain the values that are significantly different
+        % in each group, BUT the comparison node by node is only performed
+        % if the global comparison is significant
+        globalSignificantValuesMatrix = []  
     end
     
     methods
