@@ -5,7 +5,7 @@ brainMatrixCohort.loadCohortMembersFromFile('CONN_UOC\Dem_clin_MS_HV.csv');
 brainMatrixCohort.analizeCohort();
 brainMatrixCohort.evaluateCohort();
 brainMatrixCohort.showAnalysisResults();
-% brainMatrixCohort.showPlots();
+brainMatrixCohort.showPlots();
 
 featuresMatrixFA  = getFeaturesMatrix(brainMatrixCohort, 'FAMatrix');
 featuresMatrixSC  = getFeaturesMatrix(brainMatrixCohort, 'SCMatrix');

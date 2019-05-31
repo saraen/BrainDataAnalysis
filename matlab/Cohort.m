@@ -337,17 +337,17 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor', [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);            
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4,'LineWidth', 2);            
             legend('hv', 'ms');
             ylabel('Mean strength');
             xlabel('Nodes');
             
             % Plot the hub limits
-            plot(hubLimitHealthControls*ones(80), 'k', 'LineWidth', 2);
-            plot(hubLimitPatients*ones(80), 'b', 'LineWidth', 2);
+            plot(hubLimitHealthControls*ones(80), 'color', [0.6350 0.0780 0.1840], 'LineWidth', 2);
+            plot(hubLimitPatients*ones(80), 'color', [0.4660 0.6740 0.1880], 'LineWidth', 2);
             
             hold off
         end
@@ -430,10 +430,10 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor',  [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
             ylabel('Mean degree');
             xlabel('Nodes');
@@ -519,10 +519,10 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor',  [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
             ylabel('Mean betweenness centrality');
             xlabel('Nodes');
@@ -646,10 +646,10 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor',  [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
             ylabel('Mean clustering coefficient');
             xlabel('Nodes');
@@ -736,10 +736,10 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor',  [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
             ylabel('Mean shortest path length');
             xlabel('Nodes');
@@ -824,10 +824,10 @@ classdef Cohort < handle
             
             % Now we plot the values
             figure
-            plot(hv_mean_by_node, 'k-o', 'MarkerFaceColor', 'k', 'MarkerSize', 4,'LineWidth', 2);
+            plot(hv_mean_by_node, '-o', 'color', [0.6350 0.0780 0.1840], 'MarkerFaceColor',  [0.6350 0.0780 0.1840], 'MarkerSize', 4,'LineWidth', 2);
             title(plotTitle);
             hold on;
-            plot(ms_mean_by_node, 'b-o', 'MarkerFaceColor', 'b', 'MarkerSize', 4, 'LineWidth', 2);
+            plot(ms_mean_by_node, '--o', 'color', [0.4660 0.6740 0.1880], 'MarkerFaceColor', [0.4660 0.6740 0.1880], 'MarkerSize', 4, 'LineWidth', 2);
             legend('hv', 'ms');
             ylabel('Mean number of edges in the shortest path');
             xlabel('Nodes');
